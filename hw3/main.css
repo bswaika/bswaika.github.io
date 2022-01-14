@@ -1,0 +1,71 @@
+/******************** 
+    COLOR: #af9453
+    WIDTH: 1400px
+    FONTS: Roboto, EB Garamond
+*********************/
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.header{
+    background-color: white;
+    position: fixed;
+    top: 0;
+    width: 1200px;
+}
+
+.navbar{
+    padding: 20px 30px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    /* border: 1px solid black; */
+}
+
+.navbar .logo{
+    padding-left: 30px;
+    /* border: 1px solid black; */
+}
+
+.navbar .nav{
+    list-style-type: none;
+    display: flex;
+    flex-flow: row nowrap;
+    /* border: 1px solid black; */
+}
+
+.navbar .nav .nav-item{
+    margin: 0px 20px;
+}
+
+.nav-link{
+    text-decoration: none;
+}
+
+.hero .hero-img{
+    width: 1200px;    
+    position: fixed;
+    z-index: -100;
+    top: -180px;
+}
+
+.hero .hero-tagline{
+    padding-top: 35vh;
+    padding-bottom: 35vh;
+    text-align: center;
+    font-size: 60px;
+    color: white;
+}
+
+.services{
+    background-color: white;
+}
