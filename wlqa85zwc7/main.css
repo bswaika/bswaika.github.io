@@ -21,6 +21,8 @@ html{
     position: fixed;
     top: 0;
     width: 1200px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
 }
 
 .navbar{
@@ -32,7 +34,9 @@ html{
 }
 
 .navbar .logo{
-    padding-left: 30px;
+    padding-left: 45px;
+    color: #af9453;
+    font-weight: 400;
     /* border: 1px solid black; */
 }
 
@@ -49,23 +53,144 @@ html{
 
 .nav-link{
     text-decoration: none;
+    color: black;
 }
 
 .hero .hero-img{
     width: 1200px;    
     position: fixed;
     z-index: -100;
-    top: -180px;
+    top: -200px;
 }
 
 .hero .hero-tagline{
     padding-top: 35vh;
     padding-bottom: 35vh;
     text-align: center;
-    font-size: 60px;
+    font-size: 52px;
     color: white;
+    font-family: 'EB Garamond', serif;
+    font-weight: 400;
+    letter-spacing: 15px;
+    line-height: 1.5;
 }
 
 .services{
     background-color: white;
+    padding: 40px;
+    padding-top: 60px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.primary-card{
+    background-color: #af9453;
+    width: 28%;
+    padding: 85px 15px;
+}
+
+.primary-card .card-title{
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    letter-spacing: 12px;
+    margin-right: -12px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 400;
+}
+
+.primary-card .card-icon{
+    display: block;
+    width: 10%;
+    margin: 0 auto;
+    margin-bottom: 15px;
+}
+
+.primary-card .card-text{
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    font-family: 'EB Garamond', serif;
+    color: white;
+    letter-spacing: 3px;
+    line-height: 2;
+    margin-bottom: 50px;
+}
+
+.primary-card .card-button{
+    display: block;
+    margin: 0 auto;
+    width: 75%;
+    padding: 10px 0;
+    background-color: #af9453;
+    color: white;
+    border: 1px solid white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}
+
+.service-img{
+    margin-left: 40px;
+    width: 800px;
+    height: 415px;
+}
+
+.service-img img{
+    min-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.testimonial{
+    background-color: white;
+    padding: 40px;
+    padding-top: 85px;
+}
+
+.secondary-card{
+    width: 45%;
+    margin: 0 auto;
+}
+
+.secondary-card .glyph{
+    display: block;
+    margin: 0 auto;
+}
+
+.secondary-card .card-text{
+    font-family: 'EB Garamond', serif;
+    font-size: 30px;
+    letter-spacing: 3px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.secondary-card .card-footer{
+    font-family: 'Roboto', sans-serif;
+    color: #af9453;
+    font-weight: 400;
+    margin-top: 50px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.gallery{
+    background-image: url('./assets/image2.png');
+    background-attachment: fixed;
+    background-position: top;
+    border: 40px solid white;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 700px;
+}
+
+.gallery .primary-card{
+    margin-right: 40px;
+    margin-top: 40px;
+    margin-left: auto;
+}
+
+.footer{
+    background-color: #af9453;
+    color: white;
 }
