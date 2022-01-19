@@ -56,6 +56,15 @@ html{
     color: black;
 }
 
+.nav-link.active{
+    color: #af9453;
+}
+
+.nav-link:hover{
+    color: #af9453;
+    transition: 0.2s all ease-in;
+}
+
 .hero .hero-img{
     width: 1000px;    
     position: fixed;
