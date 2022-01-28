@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Search</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./client/src/main.css">
+</head>
+<body>
+    <section class="header">
+        <h1 class="header-heading">Stock Search</h1>
+        <form action="" class="search-form">
+            <div class="form-group">
+                <button type="submit" class="button"><img src="client/assets/search-solid.svg" class="search-icon"></button>
+                <input type="text" class="form-input" name="ticker" id="ticker" placeholder="Enter Stock Ticker Symbol" required>
+                <button type="reset" class="button border-left"><img src="client/assets/times-solid.svg" class="reset-icon"></button>
+            </div>
+        </form>
+    </section>
+    <section class="content hide">
+        <nav class="tabs">
+            <ul class="navbar">
+                <li class="nav-item active" id="company-tab">Company</li>
+                <li class="nav-item" id="summary-tab">Stock Summary</li>
+                <li class="nav-item" id="chart-tab">Charts</li>
+                <li class="nav-item" id="news-tab">Latest News</li>
+            </ul>
+        </nav>
+        <div class="data hide" id="company">
+            <img class="logo" id="company-logo" src="https://finnhub.io/api/logo?symbol=TSLA" alt="Company Logo">
+            <hr class="separator">
+            <p class="info"><span class="title">Company Name</span><span id="name">Tesla Inc</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Stock Ticker Symbol</span><span id="company-symbol">TSLA</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Stock Exchange Code</span><span id="code">NASDAQ</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Company IPO Date</span><span id="ipo">2010-05-09</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Category</span><span id="category">Automobiles</span></p>
+            <hr class="separator">
+        </div>
+        <div class="data hide" id="summary">
+            <hr class="separator">
+            <p class="info"><span class="title">Stock Ticker Symbol</span><span id="summary-symbol">TSLA</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Trading Day</span><span id="day">21 January, 2022</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Previous Closing Price</span><span id="close">12.00</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Opening Price</span><span id="open">13.00</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">High Price</span><span id="high">26.00</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Low Price</span><span id="low">10.00</span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Change</span><span id="change">1.00<img id="change-arrow" src="./client/assets/GreenArrowUp.png"></span></p>
+            <hr class="separator">
+            <p class="info"><span class="title">Change Percent</span><span id="change-pct">5.23<img id="change-pct-arrow" src="./client/assets/GreenArrowUp.png"></span></p>
+            <hr class="separator">
+            <div class="recommendations">
+                <div class="left">Strong<br>Sell</div>
+                <div class="container">
+                    <div class="box" id="ss">4</div>
+                    <div class="box" id="s">6</div>
+                    <div class="box" id="h">15</div>
+                    <div class="box" id="b">9</div>
+                    <div class="box" id="sb">13</div>
+                </div>
+                <div class="right">Strong<br>Buy</div>
+            </div>
+            <p class="extra">Recommendation Trends</p>
+        </div>
+        <div class="data hide" id="chart">
+
+        </div>
+        <div class="data hide" id="news">
+            <div class="news-card">
+                <img class="news-image" src="https://finnhub.io/api/logo?symbol=TSLA" alt="">
+                <div class="news-right">
+                    <h3 class="news-title">News Title Here</h3>
+                    <p class="news-date">22 January, 2022</p>
+                    <a href="#" class="news-link">See Original Post ></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="error hide">
+        <div class="error-message">
+            <p>Error : No record has been found, please enter a valid symbol</p>
+        </div>
+    </section>    
+</body>
+</html>
