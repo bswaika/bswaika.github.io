@@ -51,7 +51,7 @@ def chart(ticker):
 
 def news(ticker):
     today = datetime.now().date()
-    past_half_year = today - delta(months=6, days=1)
+    past_half_year = today - delta(days=30)
     payload = {'symbol': ticker, 'from': past_half_year, 'to': today, 'token': API_KEY}
     url = BASE_URL + '/company-news'
     r = requests.get(url, params=payload)
