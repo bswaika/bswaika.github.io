@@ -12,10 +12,12 @@ DEBUG = True
 
 API_KEY = 'c7q7ffiad3i9it661va0'
 BASE_URL = 'https://finnhub.io/api/v1'
+API_BASE = '/api/v1'
 
 app = Flask(__name__)
 CORS(app, origins=['http://localhost:5500'])
 
+@app.route(API_BASE + '/<ticker>')
 def profile(ticker):
     payload = {'symbol': ticker, 'token': API_KEY}
     url = BASE_URL + '/stock/profile2'
@@ -30,33 +32,8 @@ def profile(ticker):
             'ipo': result['ipo'],
             'category': result['finnhubIndustry'],
         }
-        return result
-    return None
-
-def summary(ticker):
-    payload = {'symbol': ticker, 'token': API_KEY}
-    url = BASE_URL + '/quote'
-    r = requests.get(url, params=payload)
-    result = r.json()
-    return result
-
-def chart(ticker):
-    today = datetime.now()
-    past_half_year = today - delta(months=6, days=1)
-    payload = {'symbol': ticker, 'resolution': 'D', 'from': int(datetime.timestamp(past_half_year)), 'to': int(datetime.timestamp(today)), 'token': API_KEY}
-    url = BASE_URL + '/stock/candle'
-    r = requests.get(url, params=payload)
-    result = r.json()
-    return result
-
-def news(ticker):
-    today = datetime.now().date()
-    past_half_year = today - delta(days=30)
-    payload = {'symbol': ticker, 'from': past_half_year, 'to': today, 'token': API_KEY}
-    url = BASE_URL + '/company-news'
-    r = requests.get(url, params=payload)
-    result = r.json()
-    return result
+        return result, 200
+    return {}, 404
 
 def recommendation(ticker):
     payload = {'symbol': ticker, 'token': API_KEY}
@@ -65,17 +42,37 @@ def recommendation(ticker):
     result = r.json()
     return result[0]
 
-@app.route('/<ticker>')
-def index(ticker):
-    result = {}
-    result['profile'] = profile(ticker)
-    if not result['profile']:
-        return {}, 404
-    result['summary'] = summary(ticker)
-    result['recommendation'] = recommendation(ticker)
-    result['chart'] = chart(ticker)
-    result['news'] = news(ticker)
+@app.route(API_BASE + '/<ticker>/summary')
+def summary(ticker):
+    payload = {'symbol': ticker, 'token': API_KEY}
+    url = BASE_URL + '/quote'
+    r = requests.get(url, params=payload)
+    summ = r.json()
+    reco = recommendation(ticker)
+    result = {
+        'summary': summ,
+        'recommendations': reco
+    }
+    return result, 200
 
+@app.route(API_BASE + '/<ticker>/chart')
+def chart(ticker):
+    today = datetime.now()
+    past_half_year = today - delta(months=6, days=1)
+    payload = {'symbol': ticker, 'resolution': 'D', 'from': int(datetime.timestamp(past_half_year)), 'to': int(datetime.timestamp(today)), 'token': API_KEY}
+    url = BASE_URL + '/stock/candle'
+    r = requests.get(url, params=payload)
+    result = r.json()
+    return result, 200
+
+@app.route(API_BASE + '/<ticker>/news')
+def news(ticker):
+    today = datetime.now().date()
+    past_half_year = today - delta(days=30)
+    payload = {'symbol': ticker, 'from': past_half_year, 'to': today, 'token': API_KEY}
+    url = BASE_URL + '/company-news'
+    r = requests.get(url, params=payload)
+    result = r.json()
     return result, 200
 
 if __name__ == '__main__':
