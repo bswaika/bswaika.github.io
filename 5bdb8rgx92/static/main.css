@@ -49,6 +49,11 @@
     padding-left: 15px;
     padding-right: 15px;
     cursor: pointer;
+    opacity: 0.5;
+}
+
+.button:hover{
+    opacity: 0.8;
 }
 
 .button.border-left{
@@ -57,12 +62,10 @@
 
 .search-icon{
     width: 10px;
-    opacity: 0.5;
 }
 
 .reset-icon{
     width: 8px;
-    opacity: 0.5;
 }
 
 .hide{
@@ -83,6 +86,8 @@
 }
 
 .content{
+    max-width: 1000px;
+    margin: 0 auto;
     margin-top: 30px;
     padding: 0 20px;
     padding-bottom: 50px;

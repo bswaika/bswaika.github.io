@@ -12,7 +12,7 @@ function generateNewsHTML(title, date, link, img){
                 <div class="news-right">
                     <h3 class="news-title">${title ? title : 'N/A'}</h3>
                     <p class="news-date">${date ? date : 'N/A'}</p>
-                    <a href="${link ? link : '#'}" class="news-link" target="_blank">See Original Post ></a>
+                    <a href="${link ? link : '#'}" class="news-link" target="_blank">See Original Post</a>
                 </div>
             </div>`;
 }
@@ -59,11 +59,11 @@ let populate = {
         document.querySelector('#summary #change-pct').innerHTML = generateChangePctHTML(data.summary.dp ? data.summary.dp : 0);
 
         if(data.recommendations){
-            document.querySelector('#summary #ss').innerHTML = data.recommendations.strongSell ? data.recommendations.strongSell : '-';
-            document.querySelector('#summary #s').innerHTML = data.recommendations.sell ? data.recommendations.sell : '-';
-            document.querySelector('#summary #h').innerHTML = data.recommendations.hold ? data.recommendations.hold : '-';
-            document.querySelector('#summary #b').innerHTML = data.recommendations.buy ? data.recommendations.buy : '-';
-            document.querySelector('#summary #sb').innerHTML = data.recommendations.strongBuy ? data.recommendations.strongBuy : '-';
+            document.querySelector('#summary #ss').innerHTML = data.recommendations.strongSell;
+            document.querySelector('#summary #s').innerHTML = data.recommendations.sell;
+            document.querySelector('#summary #h').innerHTML = data.recommendations.hold;
+            document.querySelector('#summary #b').innerHTML = data.recommendations.buy;
+            document.querySelector('#summary #sb').innerHTML = data.recommendations.strongBuy;
         }else {
             document.querySelector('#summary #ss').innerHTML = '-';
             document.querySelector('#summary #s').innerHTML = '-';
@@ -277,3 +277,7 @@ document.querySelector('#search button[type="reset"]').addEventListener('click',
     hide(content);
     hide(error);
 })
+
+window.onload = (e) => {
+    document.querySelector('#ticker').value = '';
+}
