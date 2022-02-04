@@ -2,6 +2,10 @@ let searchForm = document.querySelector('#search');
 let content = document.querySelector('.content');
 let error = document.querySelector('.error');
 
+function generateDateString(date, mode){
+    return dayjs(date * 1000).format(mode);
+}
+
 function generateNewsHTML(title, date, link, img){
     return `<div class="news-card">
                 <img class="news-image" src="${img ? img : '/static/assets/NotAvailable.jpg'}" alt="">
@@ -10,15 +14,15 @@ function generateNewsHTML(title, date, link, img){
                     <p class="news-date">${date ? date : 'N/A'}</p>
                     <a href="${link ? link : '#'}" class="news-link" target="_blank">See Original Post ></a>
                 </div>
-            </div>`
+            </div>`;
 }
 
 function generateChangeHTML(value){
-    return `${value}<img id="change-arrow" src="${value >= 0 ? '/static/assets/GreenArrowUp.png' : '/static/assets/RedArrowDown.png'}">`
+    return `${value}<img id="change-arrow" src="${value >= 0 ? '/static/assets/GreenArrowUp.png' : '/static/assets/RedArrowDown.png'}">`;
 }
 
 function generateChangePctHTML(value){
-    return `${value}<img id="change-pct-arrow" src="${value >= 0 ? '/static/assets/GreenArrowUp.png' : '/static/assets/RedArrowDown.png'}">`
+    return `${value}<img id="change-pct-arrow" src="${value >= 0 ? '/static/assets/GreenArrowUp.png' : '/static/assets/RedArrowDown.png'}">`;
 }
 
 let tabs = {
@@ -45,7 +49,7 @@ let populate = {
         document.querySelector('#company #company-logo').setAttribute('src', data.logo ? data.logo : '/static/assets/NotAvailable.jpg');
     },
     summary: function(data, ticker){
-        document.querySelector('#summary #day').innerHTML = data.summary.t ? data.summary.t : 'N/A';
+        document.querySelector('#summary #day').innerHTML = data.summary.t ? generateDateString(data.summary.t, 'D MMMM, YYYY') : 'N/A';
         document.querySelector('#summary #summary-symbol').innerHTML = ticker;
         document.querySelector('#summary #close').innerHTML = data.summary.pc ? data.summary.pc : 'N/A';
         document.querySelector('#summary #open').innerHTML = data.summary.o ? data.summary.o : 'N/A';
@@ -78,7 +82,7 @@ let populate = {
         }
         Highcharts.stockChart('chart', {
             title: {
-                text: `Stock Price ${ticker} {2021-07-22}`
+                text: `Stock Price ${ticker} ${generateDateString(Date.now() / 1000, 'YYYY-MM-DD')}`
             },
             subtitle: {
                 text: '<a href="https://finnhub.io/" target="_blank">Source: Finnhub</a>',
@@ -159,7 +163,7 @@ let populate = {
         while(count < 5 && i < data.length){
             let {headline, datetime, image, url} = data[i];
             if(headline && datetime && image && url && count < 5){
-                components.news.innerHTML += generateNewsHTML(headline, datetime, url, image);
+                components.news.innerHTML += generateNewsHTML(headline, generateDateString(datetime, 'D MMMM, YYYY'), url, image);
                 count++;
             }
             i++;
@@ -175,6 +179,7 @@ function clear(){
     document.querySelector('#company #category').innerHTML = '';
     document.querySelector('#company #company-logo').setAttribute('src', '');
     components.news.innerHTML = '';
+    components.charts.innerHTML = '';
     document.querySelector('#summary #ss').innerHTML = '';
     document.querySelector('#summary #s').innerHTML = '';
     document.querySelector('#summary #h').innerHTML = '';
