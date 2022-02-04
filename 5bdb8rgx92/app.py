@@ -1,5 +1,4 @@
-from flask import Flask
-from flask_cors import CORS
+from flask import Flask, jsonify
 import requests
 from datetime import datetime 
 from dateutil.relativedelta import relativedelta as delta
@@ -14,8 +13,11 @@ API_KEY = 'c7q7ffiad3i9it661va0'
 BASE_URL = 'https://finnhub.io/api/v1'
 API_BASE = '/api/v1'
 
-app = Flask(__name__)
-CORS(app, origins=['http://localhost:5500'])
+app = Flask(__name__, static_url_path='/static')
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 @app.route(API_BASE + '/<ticker>')
 def profile(ticker):
@@ -40,7 +42,7 @@ def recommendation(ticker):
     url = BASE_URL + '/stock/recommendation'
     r = requests.get(url, params=payload)
     result = r.json()
-    return result[0]
+    return result[0] if result else None
 
 @app.route(API_BASE + '/<ticker>/summary')
 def summary(ticker):
@@ -73,7 +75,7 @@ def news(ticker):
     url = BASE_URL + '/company-news'
     r = requests.get(url, params=payload)
     result = r.json()
-    return result, 200
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(HOST, PORT, DEBUG)
