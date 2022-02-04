@@ -61,23 +61,133 @@ let populate = {
             document.querySelector('#summary #b').innerHTML = data.recommendations.buy ? data.recommendations.buy : '-';
             document.querySelector('#summary #sb').innerHTML = data.recommendations.strongBuy ? data.recommendations.strongBuy : '-';
         }else {
-            document.querySelector('#summary #ss').innerHTML = '-'
-            document.querySelector('#summary #s').innerHTML = '-'
-            document.querySelector('#summary #h').innerHTML = '-'
-            document.querySelector('#summary #b').innerHTML = '-'
-            document.querySelector('#summary #sb').innerHTML = '-'
+            document.querySelector('#summary #ss').innerHTML = '-';
+            document.querySelector('#summary #s').innerHTML = '-';
+            document.querySelector('#summary #h').innerHTML = '-';
+            document.querySelector('#summary #b').innerHTML = '-';
+            document.querySelector('#summary #sb').innerHTML = '-';
         }
                 
     },
-    charts: function(data){
-
+    charts: function(data, ticker){
+        chart = [];
+        volume = [];
+        for(let i=0; i < data.t.length; i++){
+            chart.push([data.t[i] * 1000, data.c[i]]);
+            volume.push([data.t[i] * 1000, data.v[i]])
+        }
+        Highcharts.stockChart('chart', {
+            title: {
+                text: `Stock Price ${ticker} {2021-07-22}`
+            },
+            subtitle: {
+                text: '<a href="https://finnhub.io/" target="_blank">Source: Finnhub</a>',
+                useHTML: true
+            },
+            rangeSelector: {
+                buttons: [{
+                    type: 'day',
+                    count: 7,
+                    text: '7d'
+                }, {
+                    type: 'day',
+                    count: 15,
+                    text: '15d'
+                }, {
+                    type: 'month',
+                    count: 1,
+                    text: '1m'
+                }, {
+                    type: 'month',
+                    count: 3,
+                    text: '3m'
+                }, {
+                    type: 'month',
+                    count: 6,
+                    text: '6m'
+                }],
+                selected: 4,
+                inputEnabled: false
+            },
+            yAxis: [{
+                title: {
+                    text: 'Stock Price'
+                },
+                opposite: false
+            }, {
+                title: {
+                    text: 'Volume'
+                }
+            }], 
+            series: [{
+                name: `Stock Price`,
+                type: 'area',
+                yAxis: 0,
+                data: chart,
+                tooltip: {
+                    valueDecimals: 2
+                },
+                fillColor: {
+                    linearGradient: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                threshold: null
+            }, {
+                name: `Volume`,
+                type: 'column',
+                yAxis: 1,
+                data: volume,
+                tooltip: {
+                    valueDecimals: 2
+                },
+                pointWidth: 3
+            }]
+        });
     },
     news: function(data){
         components.news.innerHTML = '';
-        data.forEach(({headline, datetime, image, url}) => {
-            components.news.innerHTML += generateNewsHTML(headline, datetime, url, image);
-        });
+        count = 0;
+        i = 0;
+        while(count < 5 && i < data.length){
+            let {headline, datetime, image, url} = data[i];
+            if(headline && datetime && image && url && count < 5){
+                components.news.innerHTML += generateNewsHTML(headline, datetime, url, image);
+                count++;
+            }
+            i++;
+        }
     }
+}
+
+function clear(){
+    document.querySelector('#company #name').innerHTML = '';
+    document.querySelector('#company #company-symbol').innerHTML = '';
+    document.querySelector('#company #code').innerHTML = '';
+    document.querySelector('#company #ipo').innerHTML = '';
+    document.querySelector('#company #category').innerHTML = '';
+    document.querySelector('#company #company-logo').setAttribute('src', '');
+    components.news.innerHTML = '';
+    document.querySelector('#summary #ss').innerHTML = '';
+    document.querySelector('#summary #s').innerHTML = '';
+    document.querySelector('#summary #h').innerHTML = '';
+    document.querySelector('#summary #b').innerHTML = '';
+    document.querySelector('#summary #sb').innerHTML = '';
+    document.querySelector('#summary #day').innerHTML = '';
+    document.querySelector('#summary #summary-symbol').innerHTML = '';
+    document.querySelector('#summary #close').innerHTML = '';
+    document.querySelector('#summary #open').innerHTML = '';
+    document.querySelector('#summary #low').innerHTML = '';
+    document.querySelector('#summary #high').innerHTML = '';
+    document.querySelector('#summary #change').innerHTML = generateChangeHTML(0);
+    document.querySelector('#summary #change-pct').innerHTML = generateChangePctHTML(0);
 }
 
 function activate(tab){
@@ -121,13 +231,15 @@ function show(component){
 
 searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    let ticker = document.querySelector('#ticker').value;
+    let ticker = document.querySelector('#ticker').value.toUpperCase().trim();
     let API_BASE = '/api/v1';
 
     let PROFILE_URL = `${API_BASE}/${ticker}`;
     let SUMMARY_URL = `${PROFILE_URL}/summary`;
     let CHARTS_URL = `${PROFILE_URL}/chart`;
     let NEWS_URL = `${PROFILE_URL}/news`;
+
+    clear();
 
     let response = await fetch(PROFILE_URL);
     if(response.status == 404){
@@ -143,8 +255,9 @@ searchForm.addEventListener('submit', async (event) => {
         let summary = await fetch(SUMMARY_URL).then((res, err) => res.json());
         populate.summary(summary, profile.symbol);
         let charts = await fetch(CHARTS_URL).then((res, err) => res.json());
+        populate.charts(charts, profile.symbol);
         let news = await fetch(NEWS_URL).then((res, err) => res.json());
-        populate.news(news)
+        populate.news(news);
     }
 });
 
@@ -155,6 +268,7 @@ for(let tab in tabs){
 }
 
 document.querySelector('#search button[type="reset"]').addEventListener('click', (e) => {
+    clear();
     hide(content);
     hide(error);
 })

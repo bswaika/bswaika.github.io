@@ -32,10 +32,15 @@
     padding: 10px 0;
     width: 440px;
     border: none;
+    text-transform: uppercase;
 }
 
 .form-input:focus{
     outline: none;
+}
+
+.form-input::placeholder{
+    text-transform: none;
 }
 
 .button{
