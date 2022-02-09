@@ -2,3 +2,7 @@ notes.txt
 
 flask-venv
 __pycache__
+
+csci571_aws_credentials.csv
+
+*.zip
