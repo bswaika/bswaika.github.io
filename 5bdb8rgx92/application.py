@@ -66,6 +66,7 @@ def chart(ticker):
     url = BASE_URL + '/stock/candle'
     r = requests.get(url, params=payload)
     result = r.json()
+    result['from'] = int(datetime.timestamp(past_half_year))
     return result, 200
 
 @application.route(API_BASE + '/<ticker>/news')

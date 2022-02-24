@@ -25,6 +25,10 @@ function generateChangePctHTML(value){
     return value != 0 ? `${value}<img id="change-pct-arrow" src="${value >= 0 ? '/static/assets/GreenArrowUp.png' : '/static/assets/RedArrowDown.png'}">` : `${value}`;
 }
 
+function truncate(str, n){
+    return (str.length > n) ? str.substr(0, n-1) + '&hellip;' : str;
+}
+
 let tabs = {
     profile: document.querySelector('#company-tab'),
     summary: document.querySelector('#summary-tab'),
@@ -42,13 +46,13 @@ let components = {
 let populate = {
     profile: function(data){
         components.profile.innerHTML = `
-            <img class="logo" id="company-logo" src="${data.logo ? data.logo : '/static/assets/NotAvailable.jpg'}" alt="Company Logo">
+            ${data.logo ? `<img class="logo" id="company-logo" src="${data.logo}"></img>` : ''}
             <hr class="separator">
-            <p class="info"><span class="title">Company Name</span><span id="name">${data.name ? data.name : 'N/A'}</span></p>
+            <p class="info"><span class="title">Company Name</span><span id="name">${data.name ? truncate(data.name, 35) : 'N/A'}</span></p>
             <hr class="separator">
             <p class="info"><span class="title">Stock Ticker Symbol</span><span id="company-symbol">${data.symbol ? data.symbol : 'N/A'}</span></p>
             <hr class="separator">
-            <p class="info"><span class="title">Stock Exchange Code</span><span id="code">${data.code ? data.code : 'N/A'}</span></p>
+            <p class="info"><span class="title">Stock Exchange Code</span><span id="code">${data.code ? truncate(data.code, 30) : 'N/A'}</span></p>
             <hr class="separator">
             <p class="info"><span class="title">Company IPO Date</span><span id="ipo">${data.ipo ? data.ipo : 'N/A'}</span></p>
             <hr class="separator">
@@ -105,7 +109,7 @@ let populate = {
         }
         Highcharts.stockChart('chart', {
             title: {
-                text: `Stock Price ${ticker} ${generateDateString(Date.now() / 1000, 'YYYY-MM-DD')}`
+                text: `Stock Price ${ticker} ${generateDateString(data.from, 'YYYY-MM-DD')}`
             },
             subtitle: {
                 text: '<a href="https://finnhub.io/" target="_blank">Source: Finnhub</a>',
