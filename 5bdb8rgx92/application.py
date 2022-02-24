@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta as delta
 HOST = '127.0.0.1'
 PORT = '3000'
 DEBUG = True
+ENV = 'dev'
 
 # c7q7ffiad3i9it661va0 | sandbox_c7q7ffiad3i9it661vag
 
@@ -13,13 +14,13 @@ API_KEY = 'c7q7ffiad3i9it661va0'
 BASE_URL = 'https://finnhub.io/api/v1'
 API_BASE = '/api/v1'
 
-app = Flask(__name__, static_url_path='/static')
+application = Flask(__name__, static_url_path='/static')
 
-@app.route('/')
+@application.route('/')
 def index():
-    return app.send_static_file('index.html')
+    return application.send_static_file('index.html')
 
-@app.route(API_BASE + '/<ticker>')
+@application.route(API_BASE + '/<ticker>')
 def profile(ticker):
     payload = {'symbol': ticker, 'token': API_KEY}
     url = BASE_URL + '/stock/profile2'
@@ -44,7 +45,7 @@ def recommendation(ticker):
     result = r.json()
     return result[0] if result else None
 
-@app.route(API_BASE + '/<ticker>/summary')
+@application.route(API_BASE + '/<ticker>/summary')
 def summary(ticker):
     payload = {'symbol': ticker, 'token': API_KEY}
     url = BASE_URL + '/quote'
@@ -57,7 +58,7 @@ def summary(ticker):
     }
     return result, 200
 
-@app.route(API_BASE + '/<ticker>/chart')
+@application.route(API_BASE + '/<ticker>/chart')
 def chart(ticker):
     today = datetime.now()
     past_half_year = today - delta(months=6, days=1)
@@ -67,15 +68,18 @@ def chart(ticker):
     result = r.json()
     return result, 200
 
-@app.route(API_BASE + '/<ticker>/news')
+@application.route(API_BASE + '/<ticker>/news')
 def news(ticker):
     today = datetime.now().date()
-    past_half_year = today - delta(days=30)
-    payload = {'symbol': ticker, 'from': past_half_year, 'to': today, 'token': API_KEY}
+    past_month = today - delta(days=30)
+    payload = {'symbol': ticker, 'from': past_month, 'to': today, 'token': API_KEY}
     url = BASE_URL + '/company-news'
     r = requests.get(url, params=payload)
     result = r.json()
     return jsonify(result), 200
 
 if __name__ == '__main__':
-    app.run(HOST, PORT, DEBUG)
+    if ENV == 'dev':
+        application.run(HOST, PORT, DEBUG)
+    elif ENV == 'prod':
+        application.run()
