@@ -1,0 +1,19 @@
+.search-bar{
+    max-width: 320px;
+}
+
+i{
+    font-size: 12px;
+}
+
+input:focus, button:focus{
+    box-shadow: none !important;
+}
+
+input{
+    text-transform: uppercase;
+}
+
+input::placeholder{
+    text-transform: none;
+}

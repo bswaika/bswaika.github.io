@@ -1,0 +1,22 @@
+<div class="container text-center">
+    <h1 class="text-uppercase fw-bold mb-3 opacity-75">{{title}}</h1>
+    <form>
+        <div class="input-group input-group-sm search-bar my-0 mx-auto rounded-pill border-2-purple">
+            <input type="text" class="form-control pt-0 pb-0 ps-3 border-0 rounded-pill" id="ticker" name="ticker"
+                [matAutocomplete]="auto" [(ngModel)]="ticker" (ngModelChange)="search($event)" placeholder="Enter stock ticker symbol" required autocomplete="off">
+            <mat-autocomplete class="search-dropdown" #auto="matAutocomplete">
+                <mat-option *ngFor="let result of results" [value]="result.symbol">
+                    {{result.displaySymbol}} <span class="small text-muted">{{result.description}}</span>
+                </mat-option>
+            </mat-autocomplete>
+            <span class="input-group-text bg-transparent border-0 pt-0 pb-0">
+                <button class="btn pt-0 pb-1 ps-1 pe-0" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+                <button class="btn pt-0 pb-1 ms-2 ps-1 pe-2" type="reset">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </span>
+        </div>
+    </form>
+</div>
