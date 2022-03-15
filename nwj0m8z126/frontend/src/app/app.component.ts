@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SearchComponent } from './components/search/search.component';
+import { HomeComponent } from './components/home/home.component';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +9,7 @@ import { SearchComponent } from './components/search/search.component';
 export class AppComponent {
   title: string = 'Stock Search';
 
-  onActivate(component: SearchComponent){
-    if(component.title == ''){
-      component.title = this.title;
-    }
+  onActivate(component: HomeComponent){
+    
   }
 }

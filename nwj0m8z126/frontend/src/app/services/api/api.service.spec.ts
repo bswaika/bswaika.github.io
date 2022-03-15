@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AutocompleteService } from './autocomplete.service';
+import { APIService } from './api.service';
 
-describe('AutocompleteService', () => {
-  let service: AutocompleteService;
+describe('APIService', () => {
+  let service: APIService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AutocompleteService);
+    service = TestBed.inject(APIService);
   });
 
   it('should be created', () => {

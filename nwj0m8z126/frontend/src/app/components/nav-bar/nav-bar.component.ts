@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Link } from './Link';
 
 @Component({
   selector: 'app-nav-bar',
@@ -8,7 +7,7 @@ import { Link } from './Link';
 })
 export class NavBarComponent implements OnInit {
   @Input() title: string = '';
-  links: Link[] = [
+  links: any[] = [
     { title: 'Search', route: '/search/home' },
     { title: 'Watchlist', route: '/watchlist' },
     { title: 'Portfolio', route: '/portfolio' }

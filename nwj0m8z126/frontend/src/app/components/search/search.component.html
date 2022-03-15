@@ -1,12 +1,16 @@
 <div class="container text-center">
     <h1 class="text-uppercase fw-bold mb-3 opacity-75">{{title}}</h1>
-    <form>
+    <form (ngSubmit)="onSubmit(); trigger.closePanel();" (reset)="onReset(); trigger.closePanel();">
         <div class="input-group input-group-sm search-bar my-0 mx-auto rounded-pill border-2-purple">
-            <input type="text" class="form-control pt-0 pb-0 ps-3 border-0 rounded-pill" id="ticker" name="ticker"
-                [matAutocomplete]="auto" [(ngModel)]="ticker" (ngModelChange)="search($event)" placeholder="Enter stock ticker symbol" required autocomplete="off">
-            <mat-autocomplete class="search-dropdown" #auto="matAutocomplete">
-                <mat-option *ngFor="let result of results" [value]="result.symbol">
-                    {{result.displaySymbol}} <span class="small text-muted">{{result.description}}</span>
+            <input type="text" class="form-control pt-0 pb-0 ms-2 border-0 rounded-pill" id="ticker" name="ticker"
+                [matAutocomplete]="auto" [formControl]="ticker" placeholder="Enter stock ticker symbol"
+                autocomplete="off" #trigger="matAutocompleteTrigger" required>
+            <mat-autocomplete class="ms-2" #auto="matAutocomplete" (optionSelected)="onSubmit(); trigger.closePanel();">
+                <mat-option *ngIf="loadingSubject | async">
+                    <mat-spinner mode="indeterminate" diameter="30"></mat-spinner>
+                </mat-option>
+                <mat-option *ngFor="let suggestion of results" [value]="suggestion.symbol">
+                    {{suggestion.displaySymbol}} <span class="small text-muted">| {{suggestion.description}}</span>
                 </mat-option>
             </mat-autocomplete>
             <span class="input-group-text bg-transparent border-0 pt-0 pb-0">
@@ -19,4 +23,12 @@
             </span>
         </div>
     </form>
+    <ngb-toast *ngIf="errors" (hidden)="errors = false" class="mx-auto my-2 bg-danger text-white">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="toast-body pt-0 pb-0">
+                Please enter a stock to search!
+            </div>
+            <button type="button" class="btn-close me-2" (click)="errors = false"></button>
+        </div>
+    </ngb-toast>
 </div>

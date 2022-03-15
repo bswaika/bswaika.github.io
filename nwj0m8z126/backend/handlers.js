@@ -15,9 +15,8 @@ const autocomplete = async (req, res, next) => {
             q: ticker
         }).toString();
         const { data, status } = await axios.get(`${BASE_URL}/search?${params}`);
-        data.result = data.result.filter((item) => item.type == "Common Stock");
-        data.count = data.result.length;
-        return res.status(status).json(data);
+        data.result = data.result.filter((item) => item.type == 'Common Stock' && !item.symbol.includes('.'));
+        return res.status(status).json(data.result);
     }catch(err){
         next(err);
     }

@@ -15,7 +15,8 @@ app.get('/status', (req, res) => {
     });
 });
 
-app.get('/search/:ticker', handlers.autocomplete);
+app.get('/suggest', (req, res) => res.status(200).json([]));
+app.get('/suggest/:ticker', handlers.autocomplete);
 app.get('/profile/:ticker', handlers.profile);
 app.get('/quote/:ticker', handlers.quote);
 app.get('/history/:ticker', handlers.history);
