@@ -17,10 +17,6 @@ span.summary-price{
     min-height: 80px !important;
 }
 
-.chart-wrapper{
-    width: 100%;
-}
-
 /* .chart-wrapper > div:first-child {
     width: 100%;
     overflow: visible !important;

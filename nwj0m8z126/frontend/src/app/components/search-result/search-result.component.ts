@@ -1,13 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { StockChart } from 'angular-highcharts';
-import * as HighCharts from 'highcharts/highstock';
-import IndicatorsCore from 'highcharts/indicators/indicators';
-import IndicatorVBP from 'highcharts/indicators/volume-by-price';
 import { Observable, Subject, map, switchMap, of, tap } from 'rxjs';
 import { APIService } from '../../services/api/api.service';
 
-IndicatorsCore(HighCharts);
-IndicatorVBP(HighCharts);
 
 @Component({
   selector: 'app-search-result',
@@ -103,12 +97,141 @@ export class SearchResultComponent implements OnInit {
               });
               this.api.getStockRecommendations(profile.ticker).subscribe((reco) => {
                 this.data.recommendations = reco;
+                this.data.charts.recos = {
+                  chart: {
+                      type: 'column'
+                  },
+                  title: {
+                      text: 'Recommendation Trends'
+                  },
+                  xAxis: {
+                      categories: this.data.recommendations.map((item: any) => {
+                        let parts = item.period.split('-');
+                        return `${parts[0]}-${parts[0]}`
+                      })
+                  },
+                  yAxis: {
+                      min: 0,
+                      title: {
+                          text: '#Analysis'
+                      },
+                      stackLabels: {
+                          enabled: true,
+                          style: {
+                              fontWeight: 'bold',
+                          }
+                      }
+                  },
+                  legend: {
+                      align: 'center',
+                      verticalAlign: 'bottom',
+                      shadow: false
+                  },
+                  tooltip: {
+                      headerFormat: '<b>{point.x}</b><br/>',
+                      pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                  },
+                  plotOptions: {
+                      column: {
+                          stacking: 'normal',
+                          dataLabels: {
+                              enabled: true
+                          }
+                      }
+                  },
+                  series: [{
+                      name: 'Strong Buy',
+                      data: this.data.recommendations.map((item: any) => {
+                        return item.strongBuy
+                      }),
+                      color: '#176f37'
+                  }, {
+                    name: 'Buy',
+                    data: this.data.recommendations.map((item: any) => {
+                      return item.buy
+                    }),
+                    color: '#1db954'
+                  }, {
+                    name: 'Hold',
+                    data: this.data.recommendations.map((item: any) => {
+                      return item.hold
+                    }),
+                    color: '#b98b1d'
+                  }, {
+                    name: 'Sell',
+                    data: this.data.recommendations.map((item: any) => {
+                      return item.sell
+                    }),
+                    color: '#f45b5b'
+                  }, {
+                    name: 'Strong Sell',
+                    data: this.data.recommendations.map((item: any) => {
+                      return item.strongSell
+                    }),
+                    color: '#813131'
+                  }]
+                }
               });
               this.api.getStockEarnings(profile.ticker).subscribe((earnings) => {
                 this.data.earnings = earnings;
+                this.data.charts.earnings = {
+                    chart: {
+                      type: 'spline'
+                    },
+                    title: {
+                      text: 'Historical EPS Surprises'
+                    },
+                    xAxis: {
+                      categories: this.data.earnings.map((item: any) => {
+                        return `${item.period}<br>Surprise: ${item.surprise}`
+                      }),
+                      labels: {
+                        format: `{value}`,
+                        useHTML: true
+                      }
+                    },
+                    yAxis: {
+                      title: {
+                          text: 'Quarterly EPS'
+                      },
+                      lineWidth: 2
+                    },
+                    legend: {
+                      enabled: true
+                    },
+                    plotOptions: {
+                      spline: {
+                          marker: {
+                              enable: false
+                          }
+                      }
+                    },
+                    series: [{
+                      name: 'Actual',
+                      data: this.data.earnings.map((item: any) => {
+                        return item.actual
+                      })
+                    }, {
+                        name: 'Estimate',
+                        data: this.data.earnings.map((item: any) => {
+                          return item.estimate
+                        })
+                    }]
+                  };
               });
               this.api.getStockSentiment(profile.ticker).subscribe((sentiment) => {
                 this.data.sentiment = sentiment;
+                this.data.reddit = {
+                  positive: this.data.sentiment.reddit.reduce((prev: Number, curr: any) => prev + curr.positiveMention, 0),
+                  negative: this.data.sentiment.reddit.reduce((prev: Number, curr: any) => prev + curr.negativeMention, 0) 
+                };
+                this.data.twitter = {
+                  positive: this.data.sentiment.twitter.reduce((prev: Number, curr: any) => prev + curr.positiveMention, 0),
+                  negative: this.data.sentiment.twitter.reduce((prev: Number, curr: any) => prev + curr.negativeMention, 0)
+                };
+
+                this.data.reddit.total = this.data.reddit.negative + this.data.reddit.positive;
+                this.data.twitter.total = this.data.twitter.negative + this.data.twitter.positive;
               });
               this.api.getStockHistory(profile.ticker, 'D', '2Y', quote.t).subscribe((l_history) => {
                 this.data.long_history = l_history;
@@ -120,7 +243,7 @@ export class SearchResultComponent implements OnInit {
                   volChart.push([this.data.long_history.t[i] * 1000, this.data.long_history.v[i]]);
                 }
 
-                this.data.charts.charts = new StockChart({
+                this.data.charts.charts = {
                   chart: {
                     height: 500
                   },
@@ -201,7 +324,7 @@ export class SearchResultComponent implements OnInit {
                       enabled: false
                     }
                   }]
-                });
+                };
               });
 
               if(this.data.quote.marketOpen){
@@ -218,7 +341,7 @@ export class SearchResultComponent implements OnInit {
                 summaryChart.push([this.data.short_history.t[i] * 1000, this.data.short_history.c[i]]);
               }
 
-              this.data.charts.summary = new StockChart({
+              this.data.charts.summary = {
                   title: {
                     text: ''
                   },
@@ -255,7 +378,7 @@ export class SearchResultComponent implements OnInit {
                     color: this.data.quote.dp > 0 ? '#198754' : '#dc3545',
                     threshold: null
                   }]
-                });
+                };
               
 
               console.log(this.data);
