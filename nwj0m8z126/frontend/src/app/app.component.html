@@ -1,4 +1,4 @@
-<app-nav-bar [title]="title"></app-nav-bar>
+<app-nav-bar [title]="title" [url]="activeURL"></app-nav-bar>
 <div class="container main-container">
   <router-outlet (activate)="onActivate($event)"></router-outlet>
 </div>

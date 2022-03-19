@@ -13,6 +13,7 @@ export class SearchComponent implements OnInit {
   @Input() title: string= '';
 
   @Output() onStockSearch: EventEmitter<string> = new EventEmitter<string>();
+  @Output() onResetForm: EventEmitter<any> = new EventEmitter();
   
 
   ticker = new FormControl('', Validators.required);
@@ -60,6 +61,8 @@ export class SearchComponent implements OnInit {
   onReset(){
     this.loadingSubject.next(false);
     this.errors = false;
+    this.ticker.setValue('');
+    this.onResetForm.emit();
   }
 
 }

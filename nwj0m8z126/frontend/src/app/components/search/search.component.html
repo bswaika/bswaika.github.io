@@ -23,12 +23,7 @@
             </span>
         </div>
     </form>
-    <ngb-toast *ngIf="errors" (hidden)="errors = false" class="mx-auto my-2 bg-danger text-white">
-        <div class="d-flex align-items-center justify-content-between">
-            <div class="toast-body pt-0 pb-0">
-                Please enter a stock to search!
-            </div>
-            <button type="button" class="btn-close me-2" (click)="errors = false"></button>
-        </div>
-    </ngb-toast>
+    <div class="container mt-4" *ngIf="errors">
+        <ngb-alert [type]="'danger'" (closed)="errors=false">Please enter a stock to search!</ngb-alert>
+    </div>
 </div>

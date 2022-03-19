@@ -1,0 +1,28 @@
+<div class="container">
+    <div class="container mt-3 mx-auto">
+        <h2>My Watchlist</h2>
+        <ngb-alert class="text-center" *ngIf="stocks.length == 0" type="warning" [dismissible]="false">Currently you don't have any stock in your watchlist.</ngb-alert>
+        <div class="row mb-3" *ngFor="let stock of stocks">
+            <div class="col-12">
+                <div class="card cursor-pointer" (click)="onClick(stock.ticker)">
+                    <div class="card-body position-relative">
+                        <div class="row">
+                            <div class="col-6">
+                                <h2 class="lh-sm py-0 my-0">{{stock.ticker}}</h2>
+                                <p class="small mb-0">{{stock.name}}</p>
+                            </div>
+                            <div *ngIf="stock.c" class="col-6 text-end">
+                                <h2 class="py-0 my-0 lh-sm" [class]="stock.d > 0 ? 'text-success' : 'text-danger'">{{stock.c}}
+                                </h2>
+                                <p class="py-0 my-0 small" [class]="stock.d > 0 ? 'text-success' : 'text-danger'"><small><i class="bi"
+                                            [class]="stock.d > 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i></small>
+                                    {{stock.d.toFixed(2)}} ({{stock.dp.toFixed(2)}}%)</p>
+                            </div>
+                        </div>
+                        <a class="btn btn-link text-decoration-none text-dark position-absolute card-close" (click)="removeFromWatchlist(stock)"><i class="bi bi-x"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

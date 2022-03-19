@@ -1,6 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { Observable, Subject, map, switchMap, of, tap } from 'rxjs';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Observable, Subject, map, switchMap, tap } from 'rxjs';
 import { APIService } from '../../services/api/api.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NewsModalComponent } from '../news-modal/news-modal.component';
+import { LocalService } from 'src/app/services/store/local.service';
+import { SessionService } from 'src/app/services/store/session.service';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -11,6 +16,8 @@ import { APIService } from '../../services/api/api.service';
 export class SearchResultComponent implements OnInit {
 
   @Input() ticker: Subject<string> = new Subject<string>();
+  @Input() reset: Subject<boolean> = new Subject<boolean>();
+  @Output() urlChanged: EventEmitter<string> = new EventEmitter<string>();
   
   // results: Observable<any>;
   notification: any | null = null;
@@ -33,7 +40,7 @@ export class SearchResultComponent implements OnInit {
     top_news: null
   }
 
-  constructor(private api: APIService) {
+  constructor(private api: APIService, private local: LocalService, private session: SessionService, private modalService: NgbModal) {
   }
 
   ngOnInit(): void {
@@ -41,6 +48,31 @@ export class SearchResultComponent implements OnInit {
     //   this.api.getStockProfile(ticker).subscribe
     // });
     // this.results.subscribe(console.log)
+    this.reset.subscribe((val) => {
+      if(val){
+        this.data = {
+          profile: null,
+          quote: null,
+          peers: null,
+          short_history: null,
+          long_hitory: null,
+          news: null,
+          recommendations: null,
+          sentiment: null,
+          earnings: null,
+          charts: null,
+          top_news: null
+        };
+        this.notification = null;
+        if(this.priceRefreshTimer){
+          clearInterval(this.priceRefreshTimer);
+        }
+        window.history.pushState('', '', `/search/home`);
+        this.urlChanged.emit(`/search/home`);
+        this.session.clearAll();
+      }
+    })
+
     this.results = this.ticker.pipe(
       tap((ticker) => {
         this.now = Date.now();
@@ -57,7 +89,8 @@ export class SearchResultComponent implements OnInit {
           earnings: null,
           charts: null,
           top_news: null
-        }
+        };
+        this.notification = null;
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
@@ -65,13 +98,17 @@ export class SearchResultComponent implements OnInit {
       }),
       switchMap((ticker) => this.api.getStockProfile(ticker))
     );
-
+    
     this.results.subscribe((profile) => {
       if(Object.keys(profile).length > 0){
         this.api.getStockQuote(profile.ticker).subscribe((quote) => {
           this.api.getStockPeers(profile.ticker).subscribe((peers) => {
             this.api.getStockHistory(profile.ticker, '5', '6H', quote.t).subscribe((s_history) => {
+              
               this.loadingSubject.next(false);
+              window.history.pushState('', '', `/search/${profile.ticker}`);
+              this.urlChanged.emit(`/search/${profile.ticker}`);
+
               this.data.peers = peers;
               this.data.profile = profile;
               this.data.quote = quote;
@@ -79,8 +116,17 @@ export class SearchResultComponent implements OnInit {
               this.data.charts = {
                 summary: null,
                 charts: null,
-                insights: null
+                earnings: null,
+                recos: null
               }
+              this.data.watchlist = this.local.inWatchlist(profile.ticker);
+              
+              this.session.setKey('ticker', this.data.profile.ticker);
+              this.session.setKey('profile', this.data.profile);
+              this.session.setKey('quote', this.data.quote);
+              this.session.setKey('peers', this.data.peers);
+              this.session.setKey('watchlist', this.data.watchlist);
+
               this.api.getStockNews(profile.ticker).subscribe((news) => {
                 this.data.news = news;
                 this.data.top_news = [];
@@ -94,6 +140,9 @@ export class SearchResultComponent implements OnInit {
                   } 
                   i++;              
                 }
+
+                this.session.setKey('top_news', this.data.top_news);
+
               });
               this.api.getStockRecommendations(profile.ticker).subscribe((reco) => {
                 this.data.recommendations = reco;
@@ -107,7 +156,7 @@ export class SearchResultComponent implements OnInit {
                   xAxis: {
                       categories: this.data.recommendations.map((item: any) => {
                         let parts = item.period.split('-');
-                        return `${parts[0]}-${parts[0]}`
+                        return `${parts[0]}-${parts[1]}`
                       })
                   },
                   yAxis: {
@@ -171,6 +220,9 @@ export class SearchResultComponent implements OnInit {
                     color: '#813131'
                   }]
                 }
+
+                this.session.setKey('charts_recos', this.data.charts.recos);
+
               });
               this.api.getStockEarnings(profile.ticker).subscribe((earnings) => {
                 this.data.earnings = earnings;
@@ -218,6 +270,9 @@ export class SearchResultComponent implements OnInit {
                         })
                     }]
                   };
+
+                this.session.setKey('charts_earnings', this.data.charts.earnings);
+
               });
               this.api.getStockSentiment(profile.ticker).subscribe((sentiment) => {
                 this.data.sentiment = sentiment;
@@ -232,6 +287,10 @@ export class SearchResultComponent implements OnInit {
 
                 this.data.reddit.total = this.data.reddit.negative + this.data.reddit.positive;
                 this.data.twitter.total = this.data.twitter.negative + this.data.twitter.positive;
+
+                this.session.setKey('reddit', this.data.reddit);
+                this.session.setKey('twitter', this.data.twitter);
+                
               });
               this.api.getStockHistory(profile.ticker, 'D', '2Y', quote.t).subscribe((l_history) => {
                 this.data.long_history = l_history;
@@ -325,6 +384,9 @@ export class SearchResultComponent implements OnInit {
                     }
                   }]
                 };
+
+                this.session.setKey('charts_charts', this.data.charts.charts);
+
               });
 
               if(this.data.quote.marketOpen){
@@ -380,16 +442,26 @@ export class SearchResultComponent implements OnInit {
                   }]
                 };
               
+              this.session.setKey('charts_summary', this.data.charts.summary);
+              
 
               console.log(this.data);
             });
             
           });
-        });
-        
-        
+        }, (error) => {
+          this.loadingSubject.next(false);
+          window.history.pushState('', '', `/search/home`);
+          this.urlChanged.emit(`/search/home`);
+          this.notification = {
+            type: 'danger',
+            text: `Error ${error.status}: ${error.statusText}!`
+          }
+        });        
         this.notification = null;
       }else{
+        window.history.pushState('', '', `/search/home`);
+        this.urlChanged.emit(`/search/home`);
         this.loadingSubject.next(false);
         this.notification = {
           type: 'danger',
@@ -409,8 +481,29 @@ export class SearchResultComponent implements OnInit {
           top_news: null
         };
       }
+    }, (error) => {
+      this.loadingSubject.next(false);
+      this.notification = {
+        type: 'danger',
+        text: `${error}`
+      }
     });
     
+  }
+
+  openNewsModal(news: any){
+    const modalRef = this.modalService.open(NewsModalComponent);
+    modalRef.componentInstance.news = news;
+  }
+
+  toggleInWatchlist(ticker: string, name: string){
+    this.local.toggleInWatchlist(ticker, name);
+    this.data.watchlist = this.local.inWatchlist(ticker);
+    this.session.setKey('watchlist', this.data.watchlist);
+    this.notification = {
+      type: this.data.watchlist ? 'success' : 'danger',
+      text: this.data.watchlist ? `${ticker} added to Watchlist.` : `${ticker} removed from Watchlist.`
+    };
   }
 
   formatDateString(x: any){
@@ -427,6 +520,25 @@ export class SearchResultComponent implements OnInit {
     }
     let result = date[2] + '-' + date[0] + '-' + date[1] + ' ' + parts[1];
     return result; 
+  }
+
+  feedData(data: any){
+    this.data = data;
+    console.log(data);
+    this.now = Date.now();
+    window.history.pushState('', '', `/search/${data.profile.ticker}`);
+    this.urlChanged.emit(`/search/${data.profile.ticker}`);
+    if(this.data.quote.marketOpen){
+      this.priceRefreshTimer = setInterval(() => {
+        this.api.getStockQuote(this.data.profile.ticker).subscribe((quote) => {
+          this.data.quote = quote;
+        });
+      }, 15000);
+    }
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.priceRefreshTimer);
   }
 
 }

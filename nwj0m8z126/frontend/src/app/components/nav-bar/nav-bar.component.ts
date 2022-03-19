@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-nav-bar',
@@ -7,11 +8,8 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class NavBarComponent implements OnInit {
   @Input() title: string = '';
-  links: any[] = [
-    { title: 'Search', route: '/search/home' },
-    { title: 'Watchlist', route: '/watchlist' },
-    { title: 'Portfolio', route: '/portfolio' }
-  ];
+  @Input() url: string = '';
+
   isMenuCollapsed: boolean = true;
 
   constructor() { }

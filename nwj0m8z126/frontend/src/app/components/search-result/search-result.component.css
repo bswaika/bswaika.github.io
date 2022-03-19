@@ -17,6 +17,14 @@ span.summary-price{
     min-height: 80px !important;
 }
 
+.cursor-pointer{
+    cursor: pointer !important;
+}
+
+.fav-color{
+    color: #fbd700;
+}
+
 /* .chart-wrapper > div:first-child {
     width: 100%;
     overflow: visible !important;

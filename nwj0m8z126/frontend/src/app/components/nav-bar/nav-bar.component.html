@@ -1,13 +1,19 @@
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-purple pt-0 pb-1">
     <div class="container-fluid">
         <a class="navbar-brand" [routerLink]="'.'"><span class="fs-6">{{title}}</span></a>
-        <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
+        <button class="navbar-toggler mt-1" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
             &#9776;
         </button>
         <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
             <ul class="navbar-nav ms-md-auto me-md-0 pt-1">
-                <li class="nav-item px-2 small" *ngFor="let link of links">
-                    <a class="nav-link" aria-current="page" [routerLink]="link.route">{{link.title}}</a>
+                <li class="nav-item px-2 small" [class]="url.includes('/search') && url != '/search/home' ? 'active' : ''">
+                    <a class="nav-link" [class]="url.includes('/search') && url != '/search/home' ? 'text-white' : ''" aria-current="page" [routerLink]="'/search/home'">Search</a>
+                </li>
+                <li class="nav-item px-2 small" [routerLinkActive]="'active'">
+                    <a class="nav-link" aria-current="page" [routerLinkActive]="'text-white'" [routerLink]="'/watchlist'">Watchlist</a>
+                </li>
+                <li class="nav-item px-2 small" [routerLinkActive]="'active'">
+                    <a class="nav-link" aria-current="page" [routerLinkActive]="'text-white'" [routerLink]="'/portfolio'">Portfolio</a>
                 </li>
             </ul>
         </div>

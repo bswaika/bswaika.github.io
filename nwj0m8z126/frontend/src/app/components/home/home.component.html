@@ -1,2 +1,2 @@
-<app-search [title]="title" (onStockSearch)="forwardStockSearch($event)"></app-search>
-<app-search-result [ticker]="tickerSubject"></app-search-result>
+<app-search [title]="title" (onStockSearch)="forwardStockSearch($event)" (onResetForm)="forwardReset()"></app-search>
+<app-search-result [ticker]="tickerSubject" (urlChanged)="onUrlChange($event)" [reset]="resetSubject"></app-search-result>
