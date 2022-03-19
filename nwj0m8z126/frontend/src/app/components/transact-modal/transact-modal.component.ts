@@ -98,7 +98,6 @@ export class TransactModalComponent implements OnInit {
         item.owned -= this.quantity.value;
         let sold = 0;
         while(sold != this.quantity.value){
-          console.log(sold, this.quantity.value, item.transactions[item.transactions.length - 1]);
           if(item.transactions[item.transactions.length - 1].qty <= (this.quantity.value - sold)){
             sold += item.transactions[item.transactions.length - 1].qty;
             item.transactions.pop();
@@ -110,6 +109,7 @@ export class TransactModalComponent implements OnInit {
       }
       return item;
     });
+    stocks = stocks.filter((item: any) => item.owned > 0);
     wallet.funds += this.total;
     this.local.setKey('portfolio', stocks);
     this.local.setKey('wallet', wallet);

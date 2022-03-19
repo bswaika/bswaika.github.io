@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, Subject } from 'rxjs';
 import { APIService } from 'src/app/services/api/api.service';
@@ -21,7 +22,7 @@ export class PortfolioComponent implements OnInit {
   stocks: any = [];
   funds: number = 0;
 
-  constructor(private local: LocalService, private session: SessionService, private api: APIService, private modalService: NgbModal) { }
+  constructor(private local: LocalService, private session: SessionService, private api: APIService, private modalService: NgbModal, private router: Router) { }
 
   ngAfterViewInit(): void {
     this.notificationSubject.pipe(debounceTime(5000)).subscribe((val) => {
@@ -82,6 +83,11 @@ export class PortfolioComponent implements OnInit {
         };
       }
     });
+  }
+
+  onClick(ticker: string){
+    this.session.clearAll();
+    this.router.navigate(['search', ticker]);
   }
 
 }

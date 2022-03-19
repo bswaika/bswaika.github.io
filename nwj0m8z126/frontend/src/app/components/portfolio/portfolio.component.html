@@ -9,7 +9,7 @@
         <div class="row mb-3" *ngFor="let stock of stocks">
             <div class="col-12" *ngIf="stock.owned > 0">
                 <div class="card cursor-pointer">
-                    <div class="card-header d-flex align-items-baseline justify-content-start py-2">
+                    <div class="card-header d-flex align-items-baseline justify-content-start py-2 cursor-pointer" (click)="onClick(stock.ticker)">
                         <h2 class="lh-1 py-1 my-0 fw-bold">{{stock.ticker}}</h2>
                         <p class="lh-1 ms-1 py-0 my-0 text-muted fw-bold">{{stock.name}}</p>
                     </div>

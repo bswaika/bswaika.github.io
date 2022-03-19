@@ -24,6 +24,6 @@
         </div>
     </form>
     <div class="container mt-4" *ngIf="errors">
-        <ngb-alert [type]="'danger'" (closed)="errors=false">Please enter a stock to search!</ngb-alert>
+        <ngb-alert [type]="'danger'" (closed)="errors=false">Please enter a valid ticker</ngb-alert>
     </div>
 </div>

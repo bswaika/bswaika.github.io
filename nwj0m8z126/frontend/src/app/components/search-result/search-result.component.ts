@@ -82,6 +82,7 @@ export class SearchResultComponent implements OnInit {
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
+        this.loadingSubject.next(false);
         window.history.pushState('', '', `/search/home`);
         this.urlChanged.emit(`/search/home`);
         this.session.clearAll();
@@ -484,7 +485,7 @@ export class SearchResultComponent implements OnInit {
         this.notificationSubject.next(true);
         this.notification = {
           type: 'danger',
-          text: 'No records found!'
+          text: 'No data found. Please enter a valid Ticker'
         };
         this.data = {
           profile: null,
