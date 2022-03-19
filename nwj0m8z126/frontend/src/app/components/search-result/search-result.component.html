@@ -51,10 +51,10 @@
                                 <p class="small lh-1"><span class="fw-bold">Industry:</span>
                                     {{data.profile.finnhubIndustry}}</p>
                                 <p class="small lh-1"><span class="fw-bold">Webpage:</span>&nbsp;<a
-                                        class="text-decoration-none" [href]="data.profile.weburl"
+                                        class="text-decoration-none hover-underline" [href]="data.profile.weburl"
                                         target="_blank">{{data.profile.weburl}}</a></p>
                                 <p class="small lh-1"><span class="fw-bold">Company Peers:</span><br><br>
-                                    <a class="me-1 text-decoration-none cursor-pointer" (click)="ticker.next(peer)"
+                                    <a class="me-1 text-decoration-none cursor-pointer hover-underline" (click)="ticker.next(peer)"
                                         *ngFor="let peer of data.peers">{{peer}},</a>
                                 </p>
                             </div>
@@ -87,26 +87,24 @@
                             <div class="col-12">
                                 <h2 class="text-center">Social Sentiments</h2>
                                 <table class="table table-responsive-md w-75 mx-auto mt-2">
-                                    <thead>
+                                    <tbody>
                                         <tr class="table-light text-muted text-center">
                                             <th scope="col">{{data.profile.name}}</th>
                                             <th scope="col">Reddit</th>
                                             <th scope="col">Twitter</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
                                         <tr class="text-center">
-                                            <th class="table-light text-muted" scope="row">Total</th>
+                                            <th class="table-light text-muted" scope="row">Total Mentions</th>
                                             <td>{{data.reddit.total}}</td>
                                             <td>{{data.twitter.total}}</td>
                                         </tr>
                                         <tr class="text-center">
-                                            <th class="table-light text-muted" scope="row">Positive</th>
+                                            <th class="table-light text-muted" scope="row">Positive Mentions</th>
                                             <td>{{data.reddit.positive}}</td>
                                             <td>{{data.twitter.positive}}</td>
                                         </tr>
                                         <tr class="text-center">
-                                            <th class="table-light text-muted" scope="row">Negative</th>
+                                            <th class="table-light text-muted" scope="row">Negative Mentions</th>
                                             <td>{{data.reddit.negative}}</td>
                                             <td>{{data.twitter.negative}}</td>
                                         </tr>

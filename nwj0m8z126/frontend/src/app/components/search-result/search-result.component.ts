@@ -150,7 +150,7 @@ export class SearchResultComponent implements OnInit {
                 this.data.top_news = [];
                 let count = 0;
                 let i = 0;
-                while(count < 5 && i < this.data.news.length){
+                while(count < 20 && i < this.data.news.length){
                   const {summary, headline, datetime, url, image, source} = this.data.news[i];
                   if(summary && headline && datetime && url && image && source){
                     this.data.top_news.push(this.data.news[i])
@@ -195,8 +195,8 @@ export class SearchResultComponent implements OnInit {
                       shadow: false
                   },
                   tooltip: {
-                      headerFormat: '<b>{point.x}</b><br/>',
-                      pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                      headerFormat: '{point.x}<br/>',
+                      pointFormat: '{series.name}: {point.y}'
                   },
                   plotOptions: {
                       column: {
@@ -269,10 +269,15 @@ export class SearchResultComponent implements OnInit {
                     legend: {
                       enabled: true
                     },
+                    tooltip: {
+                      headerFormat: '{point.x}<br/>',
+                      pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+                      shared: true
+                    },
                     plotOptions: {
                       spline: {
                           marker: {
-                              enable: false
+                              enabled: true
                           }
                       }
                     },
@@ -282,10 +287,10 @@ export class SearchResultComponent implements OnInit {
                         return item.actual
                       })
                     }, {
-                        name: 'Estimate',
-                        data: this.data.earnings.map((item: any) => {
-                          return item.estimate
-                        })
+                      name: 'Estimate',
+                      data: this.data.earnings.map((item: any) => {
+                        return item.estimate
+                      })
                     }]
                   };
 
@@ -322,7 +327,7 @@ export class SearchResultComponent implements OnInit {
 
                 this.data.charts.charts = {
                   chart: {
-                    height: 500
+                    height: 600
                   },
                   rangeSelector: {
                     selected: 2
@@ -452,7 +457,7 @@ export class SearchResultComponent implements OnInit {
                     opposite: true
                   }],
                   series: [{
-                    name: '',
+                    name: `${this.data.profile.ticker}`,
                     type: 'line',
                     data: summaryChart,
                     color: this.data.quote.dp > 0 ? '#198754' : '#dc3545',

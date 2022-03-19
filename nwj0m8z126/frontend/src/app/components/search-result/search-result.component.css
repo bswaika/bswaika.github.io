@@ -21,6 +21,10 @@ span.summary-price{
     cursor: pointer !important;
 }
 
+a.hover-underline:hover{
+    text-decoration: underline !important;
+}
+
 .fav-color{
     color: #fbd700;
 }
