@@ -30,6 +30,20 @@ export class LocalService {
     }    
   }
 
+  inPortfolio(ticker: string){
+    let p = this.getKey('portfolio');
+    if(!p){
+      return false;
+    }else{
+      let s = p.filter((item: any) => item.ticker == ticker);
+      if(s.length == 0){
+        return 0;
+      }else{
+        return s[0].owned;
+      }
+    }
+  }
+
   inWatchlist(ticker: string){
     let wl = this.getKey('watchlist');
     if(!wl){

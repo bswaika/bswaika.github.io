@@ -1,1 +1,66 @@
-<p>portfolio works!</p>
+<div class="container">
+    <div class="container mt-3 text-center" *ngIf="notification">
+        <ngb-alert #self_closing [type]="notification.type" (closed)="notification=null">{{notification.text}}</ngb-alert>
+    </div>
+    <div class="container mt-3 mx-auto">
+        <h2 class="py-0 lh-sm my-0">My Portfolio</h2>
+        <h4>Money in Wallet: ${{funds.toFixed(2)}}</h4>
+        <ngb-alert class="text-center" *ngIf="stocks.length == 0" type="warning" [dismissible]="false">Currently you don't have any stock in your portfolio.</ngb-alert>
+        <div class="row mb-3" *ngFor="let stock of stocks">
+            <div class="col-12" *ngIf="stock.owned > 0">
+                <div class="card cursor-pointer">
+                    <div class="card-header d-flex align-items-baseline justify-content-start py-2">
+                        <h2 class="lh-1 py-1 my-0 fw-bold">{{stock.ticker}}</h2>
+                        <p class="lh-1 ms-1 py-0 my-0 text-muted fw-bold">{{stock.name}}</p>
+                    </div>
+                    <div class="card-body position-relative">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Quantity:</p>
+                                    <p class="text-end mb-0">{{stock.owned.toFixed(2)}}</p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Avg. Cost/Share:</p>
+                                    <p class="text-end mb-0">{{stock.avg.toFixed(2)}}</p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Quantity:</p>
+                                    <p class="text-end mb-0">{{stock.total.toFixed(2)}}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Change:</p>
+                                    <p class="text-end mb-0" [class]="stock.display"><i class="bi"
+                                        [class]="stock.change > 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'" *ngIf="stock.display"></i>{{stock.change != null ? stock.change.toFixed(2) : ''}}</p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Current Price:</p>
+                                    <p class="text-end mb-0" [class]="stock.display">{{stock.current != null ? stock.current.toFixed(2) : ''}}</p>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p class="text-start mb-0">Market Value:</p>
+                                    <p class="text-end mb-0" [class]="stock.display">{{stock.market != null ? stock.market.toFixed(2) : ''}}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- <div *ngIf="stock.c" class="col-6 text-end">
+                                <h2 class="py-0 my-0 lh-sm" [class]="stock.d > 0 ? 'text-success' : 'text-danger'">{{stock.c}}
+                                </h2>
+                                <p class="py-0 my-0 small" [class]="stock.d > 0 ? 'text-success' : 'text-danger'"><small><i class="bi"
+                                            [class]="stock.d > 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i></small>
+                                    {{stock.d.toFixed(2)}} ({{stock.dp.toFixed(2)}}%)</p>
+                            </div> -->
+                        </div>
+                        <!-- <a class="btn btn-link text-decoration-none text-dark position-absolute card-close" (click)="removeFromWatchlist(stock)"><i class="bi bi-x"></i></a> -->
+                    </div>
+                    <div class="card-footer d-flex justify-content-end py-2">
+                        <button class="btn btn-primary btn-sm px-2" (click)="openTransactModal(stock.ticker, stock.name, stock.owned, stock.current, true)"><span class="small lh-sm">Buy</span></button>
+                        <button class="btn btn-danger btn-sm ms-2 px-2" (click)="openTransactModal(stock.ticker, stock.name, stock.owned, stock.current, false)"><span class="small lh-sm">Sell</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

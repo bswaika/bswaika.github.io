@@ -3,7 +3,7 @@
         <mat-spinner class="mx-auto" mode="indeterminate" diameter="50"></mat-spinner>
     </div>
     <div class="container mt-4 text-center" *ngIf="notification">
-        <ngb-alert [type]="notification.type" (closed)="notification=null">{{notification.text}}</ngb-alert>
+        <ngb-alert #self_closing [type]="notification.type" (closed)="notification=null">{{notification.text}}</ngb-alert>
     </div>
     <div class="container mx-auto mt-4" *ngIf="data.profile">
         <div class="row">
@@ -12,8 +12,8 @@
                         class="btn small px-0 py-0" (click)="toggleInWatchlist(data.profile.ticker.toUpperCase(), data.profile.name)"><i class="{{data.watchlist ? 'bi bi-star-fill fav-color' : 'bi bi-star'}}"></i></a> </h1>
                 <h2 class="text-muted py-0 my-0 lh-sm mb-1">{{data.profile.name}}</h2>
                 <p class="small lh-sm">{{data.profile.exchange}}</p>
-                <button class="btn btn-success btn-sm px-3">Buy</button>
-                <button class="btn btn-danger btn-sm ms-2 px-3">Sell</button>
+                <button class="btn btn-success btn-sm px-3" (click)="openTransactModal(data.profile.ticker, data.profile.name, data.owned, data.quote.c, true)">Buy</button>
+                <button class="btn btn-danger btn-sm ms-2 px-3" *ngIf="this.data.owned" (click)="openTransactModal(data.profile.ticker, data.profile.name, data.owned, data.quote.c, false)">Sell</button>
             </div>
             <div class="col-4">
                 <img class="d-block mx-auto logo mt-2" [src]="data.profile.logo" alt="">

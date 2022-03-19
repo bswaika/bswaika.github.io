@@ -4,6 +4,7 @@ import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { Router } from '@angular/router';
 import { PortfolioComponent } from './components/portfolio/portfolio.component';
 import { SessionService } from './services/store/session.service';
+import { LocalService } from './services/store/local.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,11 @@ import { SessionService } from './services/store/session.service';
 export class AppComponent{
   title: string = 'Stock Search';
   activeURL: string = '';
-  constructor(private router: Router, private session: SessionService){}
+  constructor(private router: Router, private session: SessionService, private local: LocalService){
+    if(!this.local.getKey('wallet')){
+      this.local.setKey('wallet', { funds: 25000 });
+    }
+  }
 
   onActivate(component: HomeComponent | WatchlistComponent | PortfolioComponent){
     if(component instanceof HomeComponent){
@@ -23,6 +28,7 @@ export class AppComponent{
         data.quote = this.session.getKey('quote');
         data.peers = this.session.getKey('peers');
         data.watchlist = this.session.getKey('watchlist');
+        data.owned = this.session.getKey('owned');
         data.top_news = this.session.getKey('top_news');
         data.charts = {};
         data.charts.summary = this.session.getKey('charts_summary');

@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Observable, Subject, map, switchMap, tap } from 'rxjs';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Observable, Subject, map, switchMap, tap, debounceTime } from 'rxjs';
 import { APIService } from '../../services/api/api.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlert, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NewsModalComponent } from '../news-modal/news-modal.component';
 import { LocalService } from 'src/app/services/store/local.service';
 import { SessionService } from 'src/app/services/store/session.service';
 import { ActivatedRoute } from '@angular/router';
+import { TransactModalComponent } from '../transact-modal/transact-modal.component';
 
 
 @Component({
@@ -18,12 +19,15 @@ export class SearchResultComponent implements OnInit {
   @Input() ticker: Subject<string> = new Subject<string>();
   @Input() reset: Subject<boolean> = new Subject<boolean>();
   @Output() urlChanged: EventEmitter<string> = new EventEmitter<string>();
+
+  @ViewChild('self_closing', {static: false}) selfClosing!: NgbAlert;
   
   // results: Observable<any>;
-  notification: any | null = null;
+  notification: any = null;
+  notificationSubject: Subject<boolean> = new Subject<boolean>();
 
   loadingSubject: Subject<boolean> = new Subject<boolean>();
-  priceRefreshTimer: any | null = null;
+  priceRefreshTimer: any = null;
   results: Observable<any> = new Observable<any>();
   now: Number = Date.now();
   data: any = {
@@ -41,6 +45,17 @@ export class SearchResultComponent implements OnInit {
   }
 
   constructor(private api: APIService, private local: LocalService, private session: SessionService, private modalService: NgbModal) {
+  }
+
+  ngAfterViewInit(): void{
+    this.notificationSubject.pipe(debounceTime(5000)).subscribe((val) => {
+      if(val){
+        if(this.selfClosing){
+          this.selfClosing.close();
+        }
+      }
+    });
+
   }
 
   ngOnInit(): void {
@@ -120,12 +135,14 @@ export class SearchResultComponent implements OnInit {
                 recos: null
               }
               this.data.watchlist = this.local.inWatchlist(profile.ticker);
+              this.data.owned = this.local.inPortfolio(profile.ticker);
               
               this.session.setKey('ticker', this.data.profile.ticker);
               this.session.setKey('profile', this.data.profile);
               this.session.setKey('quote', this.data.quote);
               this.session.setKey('peers', this.data.peers);
               this.session.setKey('watchlist', this.data.watchlist);
+              this.session.setKey('owned', this.data.owned);
 
               this.api.getStockNews(profile.ticker).subscribe((news) => {
                 this.data.news = news;
@@ -453,6 +470,7 @@ export class SearchResultComponent implements OnInit {
           this.loadingSubject.next(false);
           window.history.pushState('', '', `/search/home`);
           this.urlChanged.emit(`/search/home`);
+          this.notificationSubject.next(true);
           this.notification = {
             type: 'danger',
             text: `Error ${error.status}: ${error.statusText}!`
@@ -463,6 +481,7 @@ export class SearchResultComponent implements OnInit {
         window.history.pushState('', '', `/search/home`);
         this.urlChanged.emit(`/search/home`);
         this.loadingSubject.next(false);
+        this.notificationSubject.next(true);
         this.notification = {
           type: 'danger',
           text: 'No records found!'
@@ -483,6 +502,7 @@ export class SearchResultComponent implements OnInit {
       }
     }, (error) => {
       this.loadingSubject.next(false);
+      this.notificationSubject.next(true);
       this.notification = {
         type: 'danger',
         text: `${error}`
@@ -496,10 +516,33 @@ export class SearchResultComponent implements OnInit {
     modalRef.componentInstance.news = news;
   }
 
+  openTransactModal(ticker: string, name: string, owned: number, price: number, buy: boolean){
+    const modalRef = this.modalService.open(TransactModalComponent);
+    modalRef.componentInstance.ticker = ticker;
+    modalRef.componentInstance.name = name;
+    modalRef.componentInstance.price = price;
+    modalRef.componentInstance.owned = owned;
+    modalRef.componentInstance.buy = buy;
+    modalRef.componentInstance.funds = this.local.getKey('wallet').funds;
+
+    modalRef.dismissed.subscribe((val) => {
+      if(val){
+        this.data.owned = this.local.inPortfolio(ticker);
+        this.session.setKey('owned', this.data.owned);
+        this.notificationSubject.next(true);
+        this.notification = {
+          type: buy ? 'success' : 'danger',
+          text: buy ? `${ticker} bought successfully.` : `${ticker} sold successfully.`
+        };
+      }
+    });
+  }
+
   toggleInWatchlist(ticker: string, name: string){
     this.local.toggleInWatchlist(ticker, name);
     this.data.watchlist = this.local.inWatchlist(ticker);
     this.session.setKey('watchlist', this.data.watchlist);
+    this.notificationSubject.next(true);
     this.notification = {
       type: this.data.watchlist ? 'success' : 'danger',
       text: this.data.watchlist ? `${ticker} added to Watchlist.` : `${ticker} removed from Watchlist.`

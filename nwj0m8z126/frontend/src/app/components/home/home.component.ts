@@ -24,7 +24,7 @@ export class HomeComponent implements AfterViewInit {
 
   constructor(private route: ActivatedRoute) { 
     
-   }
+  }
 
   ngAfterViewInit(): void {
     this.route.paramMap.subscribe((params) => {

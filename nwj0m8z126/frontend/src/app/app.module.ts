@@ -20,6 +20,7 @@ import { ChartComponent } from './components/chart/chart.component';
 import { NewsModalComponent } from './components/news-modal/news-modal.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { PortfolioComponent } from './components/portfolio/portfolio.component';
+import { TransactModalComponent } from './components/transact-modal/transact-modal.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { PortfolioComponent } from './components/portfolio/portfolio.component';
     ChartComponent,
     NewsModalComponent,
     WatchlistComponent,
-    PortfolioComponent
+    PortfolioComponent,
+    TransactModalComponent
   ],
   imports: [
     BrowserModule,
