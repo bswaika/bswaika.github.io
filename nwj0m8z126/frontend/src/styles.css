@@ -34,3 +34,9 @@ body::before{
 html, body { height: 100%; }
 
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif !important; }
+
+@media screen and (max-width: 767px) {
+    .navbar.fixed-top{
+        position: static !important;
+    }
+}

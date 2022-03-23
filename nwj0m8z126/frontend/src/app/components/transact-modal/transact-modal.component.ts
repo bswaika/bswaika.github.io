@@ -27,7 +27,7 @@ export class TransactModalComponent implements OnInit {
   ngOnInit(): void {
     this.quantity.valueChanges.subscribe((val) => {
       if(val < 0 || !Number.isInteger(val)){
-        this.error = 'Only accepted values are positive whole numbers!';
+        this.error = 'ERROR';
         this.total = 0;
       }else{
         this.total = this.price * val;

@@ -20,11 +20,19 @@ export class SearchResultComponent implements OnInit {
   @Input() reset: Subject<boolean> = new Subject<boolean>();
   @Output() urlChanged: EventEmitter<string> = new EventEmitter<string>();
 
-  @ViewChild('self_closing', {static: false}) selfClosing!: NgbAlert;
+  @ViewChild('self_closing_other', {static: false}) selfClosingOther!: NgbAlert;
+  @ViewChild('self_closing_wl', {static: false}) selfClosingWl!: NgbAlert;
+  @ViewChild('self_closing_pf', {static: false}) selfClosingPf!: NgbAlert;
   
   // results: Observable<any>;
-  notification: any = null;
-  notificationSubject: Subject<boolean> = new Subject<boolean>();
+  notification: any = {
+    wl: null,
+    pf: null,
+    other: null
+  };
+  watchlistSubject: Subject<boolean> = new Subject<boolean>();
+  portfolioSubject: Subject<boolean> = new Subject<boolean>();
+  otherSubject: Subject<boolean> = new Subject<boolean>();
 
   loadingSubject: Subject<boolean> = new Subject<boolean>();
   priceRefreshTimer: any = null;
@@ -48,13 +56,29 @@ export class SearchResultComponent implements OnInit {
   }
 
   ngAfterViewInit(): void{
-    this.notificationSubject.pipe(debounceTime(5000)).subscribe((val) => {
+    this.otherSubject.pipe(debounceTime(5000)).subscribe((val) => {
       if(val){
-        if(this.selfClosing){
-          this.selfClosing.close();
+        if(this.selfClosingOther){
+          this.selfClosingOther.close();
         }
       }
     });
+
+    this.watchlistSubject.pipe(debounceTime(5000)).subscribe((val) => {
+      if(val){
+        if(this.selfClosingWl){
+          this.selfClosingWl.close();
+        }
+      }
+    });
+
+    this.portfolioSubject.pipe(debounceTime(5000)).subscribe((val) => {
+      if(val){
+        if(this.selfClosingPf){
+          this.selfClosingPf.close();
+        }
+      }
+    });    
 
   }
 
@@ -70,7 +94,7 @@ export class SearchResultComponent implements OnInit {
           quote: null,
           peers: null,
           short_history: null,
-          long_hitory: null,
+          long_history: null,
           news: null,
           recommendations: null,
           sentiment: null,
@@ -78,7 +102,11 @@ export class SearchResultComponent implements OnInit {
           charts: null,
           top_news: null
         };
-        this.notification = null;
+        this.notification = {
+          wl: null,
+          pf: null,
+          other: null
+        };
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
@@ -98,7 +126,7 @@ export class SearchResultComponent implements OnInit {
           quote: null,
           peers: null,
           short_history: null,
-          long_hitory: null,
+          long_history: null,
           news: null,
           recommendations: null,
           sentiment: null,
@@ -106,7 +134,11 @@ export class SearchResultComponent implements OnInit {
           charts: null,
           top_news: null
         };
-        this.notification = null;
+        this.notification = {
+          wl: null,
+          pf: null,
+          other: null
+        };
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
@@ -476,19 +508,23 @@ export class SearchResultComponent implements OnInit {
           this.loadingSubject.next(false);
           window.history.pushState('', '', `/search/home`);
           this.urlChanged.emit(`/search/home`);
-          this.notificationSubject.next(true);
-          this.notification = {
+          this.otherSubject.next(true);
+          this.notification.other = {
             type: 'danger',
             text: `Error ${error.status}: ${error.statusText}!`
           }
         });        
-        this.notification = null;
+        this.notification = {
+          wl: null,
+          pf: null,
+          other: null
+        };
       }else{
         window.history.pushState('', '', `/search/home`);
         this.urlChanged.emit(`/search/home`);
         this.loadingSubject.next(false);
-        this.notificationSubject.next(true);
-        this.notification = {
+        this.otherSubject.next(true);
+        this.notification.other = {
           type: 'danger',
           text: 'No data found. Please enter a valid Ticker'
         };
@@ -497,7 +533,7 @@ export class SearchResultComponent implements OnInit {
           quote: null,
           peers: null,
           short_history: null,
-          long_hitory: null,
+          long_history: null,
           news: null,
           recommendations: null,
           sentiment: null,
@@ -508,8 +544,8 @@ export class SearchResultComponent implements OnInit {
       }
     }, (error) => {
       this.loadingSubject.next(false);
-      this.notificationSubject.next(true);
-      this.notification = {
+      this.otherSubject.next(true);
+      this.notification.other = {
         type: 'danger',
         text: `${error}`
       }
@@ -535,8 +571,8 @@ export class SearchResultComponent implements OnInit {
       if(val){
         this.data.owned = this.local.inPortfolio(ticker);
         this.session.setKey('owned', this.data.owned);
-        this.notificationSubject.next(true);
-        this.notification = {
+        this.portfolioSubject.next(true);
+        this.notification.pf = {
           type: buy ? 'success' : 'danger',
           text: buy ? `${ticker} bought successfully.` : `${ticker} sold successfully.`
         };
@@ -548,8 +584,8 @@ export class SearchResultComponent implements OnInit {
     this.local.toggleInWatchlist(ticker, name);
     this.data.watchlist = this.local.inWatchlist(ticker);
     this.session.setKey('watchlist', this.data.watchlist);
-    this.notificationSubject.next(true);
-    this.notification = {
+    this.watchlistSubject.next(true);
+    this.notification.wl = {
       type: this.data.watchlist ? 'success' : 'danger',
       text: this.data.watchlist ? `${ticker} added to Watchlist.` : `${ticker} removed from Watchlist.`
     };

@@ -8,8 +8,10 @@
     <p class="my-0 lh-sm py-0">Current Price: ${{price.toFixed(2)}}</p>
     <p class="my-0 lh-sm py-0">Money in Wallet: ${{funds.toFixed(2)}}</p>
     
-    <p class="my-0 lh-sm py-0">Quantity:&nbsp;<input type="number" class="d-inline form-control form-control-sm w-75" id="quantity" name="quantity" [formControl]="quantity" min="0"></p>
-    <p class="mt-2 mb-0 lh-sm py-0 text-danger" *ngIf="error">{{error}}</p>
+    <p class="my-0 lh-sm py-0">Quantity:&nbsp;
+            <input type="number" class="d-inline form-control form-control-sm w-50" id="quantity" name="quantity" [formControl]="quantity" min="0">
+    </p>
+    <p class="mt-2 mb-0 lh-sm py-0 text-danger" *ngIf="error && error!='ERROR'">{{error}}</p>
 </div>
 <div class="modal-footer justify-content-between py-1">
     <p class="my-0 lh-sm py-0">Total: ${{total.toFixed(2)}}</p>

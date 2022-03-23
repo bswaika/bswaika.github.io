@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 export class WatchlistComponent implements OnInit {
 
   stocks: any = [];
-  intervals: any = [];
+  // intervals: any = [];
 
   @Output() onClickWatchlistStock: EventEmitter<string> = new EventEmitter<string>();
 
@@ -29,11 +29,11 @@ export class WatchlistComponent implements OnInit {
         item.d = q.d;
         item.dp = q.dp;
       });
-      this.intervals.push(setInterval(() => this.api.getStockQuote(item.ticker).subscribe((q) => {
-        item.c = q.c;
-        item.d = q.d;
-        item.dp = q.dp;
-      }), 15000));
+      // this.intervals.push(setInterval(() => this.api.getStockQuote(item.ticker).subscribe((q) => {
+      //   item.c = q.c;
+      //   item.d = q.d;
+      //   item.dp = q.dp;
+      // }), 15000));
       return item;
     });
   }
@@ -43,7 +43,6 @@ export class WatchlistComponent implements OnInit {
     if(this.session.getKey('ticker') == stock.ticker){
       this.session.setKey('watchlist', false);
     }
-    this.ngOnDestroy();
     this.ngOnInit();
   }
 
@@ -53,6 +52,6 @@ export class WatchlistComponent implements OnInit {
   }
 
   ngOnDestroy(){
-    this.intervals.forEach((item: any) => clearInterval(item));
+    // this.intervals.forEach((item: any) => clearInterval(item));
   }
 }

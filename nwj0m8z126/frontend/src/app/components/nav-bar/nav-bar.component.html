@@ -6,13 +6,13 @@
         </button>
         <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
             <ul class="navbar-nav ms-md-auto me-md-0 pt-1">
-                <li class="nav-item px-2 small" [class]="url.includes('/search') && url != '/search/home' ? 'active' : ''">
+                <li class="nav-item px-2 small text-end" [class]="url.includes('/search') && url != '/search/home' ? 'active' : ''">
                     <a class="nav-link" [class]="url.includes('/search') && url != '/search/home' ? 'text-white' : ''" aria-current="page" [routerLink]="'/search/home'">Search</a>
                 </li>
-                <li class="nav-item px-2 small" [routerLinkActive]="'active'">
+                <li class="nav-item px-2 small text-end" [routerLinkActive]="'active'">
                     <a class="nav-link" aria-current="page" [routerLinkActive]="'text-white'" [routerLink]="'/watchlist'">Watchlist</a>
                 </li>
-                <li class="nav-item px-2 small" [routerLinkActive]="'active'">
+                <li class="nav-item px-2 small text-end" [routerLinkActive]="'active'">
                     <a class="nav-link" aria-current="page" [routerLinkActive]="'text-white'" [routerLink]="'/portfolio'">Portfolio</a>
                 </li>
             </ul>
