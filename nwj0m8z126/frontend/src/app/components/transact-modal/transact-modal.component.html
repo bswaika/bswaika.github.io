@@ -15,5 +15,5 @@
 </div>
 <div class="modal-footer justify-content-between py-1">
     <p class="my-0 lh-sm py-0">Total: ${{total.toFixed(2)}}</p>
-    <button type="button" class="btn btn-success btn-sm" (click)="transact()" [disabled]="error">{{buy ? 'Buy' : 'Sell'}}</button>
+    <button type="button" class="btn btn-success btn-sm" (click)="transact()" [disabled]="error || quantity.value == 0">{{buy ? 'Buy' : 'Sell'}}</button>
 </div>

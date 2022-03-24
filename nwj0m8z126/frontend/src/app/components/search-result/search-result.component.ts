@@ -20,7 +20,6 @@ export class SearchResultComponent implements OnInit {
   @Input() reset: Subject<boolean> = new Subject<boolean>();
   @Output() urlChanged: EventEmitter<string> = new EventEmitter<string>();
 
-  @ViewChild('self_closing_other', {static: false}) selfClosingOther!: NgbAlert;
   @ViewChild('self_closing_wl', {static: false}) selfClosingWl!: NgbAlert;
   @ViewChild('self_closing_pf', {static: false}) selfClosingPf!: NgbAlert;
   
@@ -32,10 +31,12 @@ export class SearchResultComponent implements OnInit {
   };
   watchlistSubject: Subject<boolean> = new Subject<boolean>();
   portfolioSubject: Subject<boolean> = new Subject<boolean>();
-  otherSubject: Subject<boolean> = new Subject<boolean>();
 
+  tickerVal: string = '';
+  priceChangeSubject: Subject<number> = new Subject<number>();
   loadingSubject: Subject<boolean> = new Subject<boolean>();
   priceRefreshTimer: any = null;
+  chartRefreshTimer: any = null;
   results: Observable<any> = new Observable<any>();
   now: Number = Date.now();
   data: any = {
@@ -56,14 +57,6 @@ export class SearchResultComponent implements OnInit {
   }
 
   ngAfterViewInit(): void{
-    this.otherSubject.pipe(debounceTime(5000)).subscribe((val) => {
-      if(val){
-        if(this.selfClosingOther){
-          this.selfClosingOther.close();
-        }
-      }
-    });
-
     this.watchlistSubject.pipe(debounceTime(5000)).subscribe((val) => {
       if(val){
         if(this.selfClosingWl){
@@ -110,10 +103,14 @@ export class SearchResultComponent implements OnInit {
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
+        if(this.chartRefreshTimer){
+          clearInterval(this.chartRefreshTimer);
+        }
         this.loadingSubject.next(false);
         window.history.pushState('', '', `/search/home`);
         this.urlChanged.emit(`/search/home`);
         this.session.clearAll();
+        this.tickerVal = '';
       }
     })
 
@@ -142,6 +139,10 @@ export class SearchResultComponent implements OnInit {
         if(this.priceRefreshTimer){
           clearInterval(this.priceRefreshTimer);
         }
+        if(this.chartRefreshTimer){
+          clearInterval(this.chartRefreshTimer);
+        }
+        this.tickerVal = ticker;
         return ticker;
       }),
       switchMap((ticker) => this.api.getStockProfile(ticker))
@@ -193,6 +194,14 @@ export class SearchResultComponent implements OnInit {
 
                 this.session.setKey('top_news', this.data.top_news);
 
+              }, (error) => {
+                this.loadingSubject.next(false);
+                window.history.pushState('', '', `/search/${this.tickerVal}`);
+                this.urlChanged.emit(`/search/${this.tickerVal}`);
+                this.notification.other = {
+                  type: 'danger',
+                  text: `Error ${error.status}: ${error.statusText}!`
+                }
               });
               this.api.getStockRecommendations(profile.ticker).subscribe((reco) => {
                 this.data.recommendations = reco;
@@ -328,6 +337,14 @@ export class SearchResultComponent implements OnInit {
 
                 this.session.setKey('charts_earnings', this.data.charts.earnings);
 
+              }, (error) => {
+                this.loadingSubject.next(false);
+                window.history.pushState('', '', `/search/${this.tickerVal}`);
+                this.urlChanged.emit(`/search/${this.tickerVal}`);
+                this.notification.other = {
+                  type: 'danger',
+                  text: `Error ${error.status}: ${error.statusText}!`
+                }
               });
               this.api.getStockSentiment(profile.ticker).subscribe((sentiment) => {
                 this.data.sentiment = sentiment;
@@ -346,6 +363,14 @@ export class SearchResultComponent implements OnInit {
                 this.session.setKey('reddit', this.data.reddit);
                 this.session.setKey('twitter', this.data.twitter);
                 
+              }, (error) => {
+                this.loadingSubject.next(false);
+                window.history.pushState('', '', `/search/${this.tickerVal}`);
+                this.urlChanged.emit(`/search/${this.tickerVal}`);
+                this.notification.other = {
+                  type: 'danger',
+                  text: `Error ${error.status}: ${error.statusText}!`
+                }
               });
               this.api.getStockHistory(profile.ticker, 'D', '2Y', quote.t).subscribe((l_history) => {
                 this.data.long_history = l_history;
@@ -442,14 +467,76 @@ export class SearchResultComponent implements OnInit {
 
                 this.session.setKey('charts_charts', this.data.charts.charts);
 
+              }, (error) => {
+                this.loadingSubject.next(false);
+                window.history.pushState('', '', `/search/${this.tickerVal}`);
+                this.urlChanged.emit(`/search/${this.tickerVal}`);
+                this.notification.other = {
+                  type: 'danger',
+                  text: `Error ${error.status}: ${error.statusText}!`
+                }
               });
 
               if(this.data.quote.marketOpen){
                 this.priceRefreshTimer = setInterval(() => {
                   this.api.getStockQuote(profile.ticker).subscribe((quote) => {
                     this.data.quote = quote;
+                    this.now = Date.now();
+                    this.priceChangeSubject.next(this.data.quote.c);
                   });
                 }, 15000);
+                this.chartRefreshTimer = setInterval(() => {
+                  this.api.getStockHistory(profile.ticker, '5', '6H', quote.t).subscribe((s_history) => {
+                    this.data.short_history = s_history;
+                    let summaryChart: any = [];
+                    for(let i=0; i<this.data.short_history.t.length; i++){
+                      // console.log(this.data.short_history.t[i]);
+                      summaryChart.push([this.data.short_history.t[i] * 1000, this.data.short_history.c[i]]);
+                    }
+                    this.data.charts.summary = {
+                      title: {
+                        text: ''
+                      },
+                      subtitle: {
+                        text: `${this.data.profile.ticker} Hourly Price Variation`
+                      },
+                      navigator: {
+                        height: 0,
+                        handles:{
+                          enabled: false
+                        },
+                        xAxis: {
+                          labels: {
+                            enabled: false
+                          }
+                        }
+                      },
+                      rangeSelector: {
+                        enabled: false,
+                      },
+                      legend:{
+                        enabled: false
+                      },
+                      yAxis: [{
+                        title: {
+                          text: ''
+                        },
+                        opposite: true
+                      }],
+                      series: [{
+                        name: `${this.data.profile.ticker}`,
+                        type: 'line',
+                        data: summaryChart,
+                        color: this.data.quote.dp > 0 ? '#198754' : '#dc3545',
+                        threshold: null
+                      }],
+                      time: {
+                        useUTC: false
+                      }
+                    };
+                  });
+                }, 60000);
+
               }
 
               let summaryChart: any = [];
@@ -494,21 +581,39 @@ export class SearchResultComponent implements OnInit {
                     data: summaryChart,
                     color: this.data.quote.dp > 0 ? '#198754' : '#dc3545',
                     threshold: null
-                  }]
+                  }],
+                  time: {
+                    useUTC: false
+                  }
                 };
               
               this.session.setKey('charts_summary', this.data.charts.summary);
               
 
               console.log(this.data);
+            }, (error) => {
+              this.loadingSubject.next(false);
+              window.history.pushState('', '', `/search/${this.tickerVal}`);
+              this.urlChanged.emit(`/search/${this.tickerVal}`);
+              this.notification.other = {
+                type: 'danger',
+                text: `Error ${error.status}: ${error.statusText}!`
+              }
             });
             
+          }, (error) => {
+            this.loadingSubject.next(false);
+            window.history.pushState('', '', `/search/${this.tickerVal}`);
+            this.urlChanged.emit(`/search/${this.tickerVal}`);
+            this.notification.other = {
+              type: 'danger',
+              text: `Error ${error.status}: ${error.statusText}!`
+            }
           });
         }, (error) => {
           this.loadingSubject.next(false);
-          window.history.pushState('', '', `/search/home`);
-          this.urlChanged.emit(`/search/home`);
-          this.otherSubject.next(true);
+          window.history.pushState('', '', `/search/${this.tickerVal}`);
+          this.urlChanged.emit(`/search/${this.tickerVal}`);
           this.notification.other = {
             type: 'danger',
             text: `Error ${error.status}: ${error.statusText}!`
@@ -520,10 +625,9 @@ export class SearchResultComponent implements OnInit {
           other: null
         };
       }else{
-        window.history.pushState('', '', `/search/home`);
-        this.urlChanged.emit(`/search/home`);
+        window.history.pushState('', '', `/search/${this.tickerVal}`);
+        this.urlChanged.emit(`/search/${this.tickerVal}`);
         this.loadingSubject.next(false);
-        this.otherSubject.next(true);
         this.notification.other = {
           type: 'danger',
           text: 'No data found. Please enter a valid Ticker'
@@ -543,11 +647,12 @@ export class SearchResultComponent implements OnInit {
         };
       }
     }, (error) => {
+      window.history.pushState('', '', `/search/${this.tickerVal}`);
+      this.urlChanged.emit(`/search/${this.tickerVal}`);
       this.loadingSubject.next(false);
-      this.otherSubject.next(true);
       this.notification.other = {
         type: 'danger',
-        text: `${error}`
+        text: `Error ${error.status}: ${error.statusText}!`
       }
     });
     
@@ -566,6 +671,7 @@ export class SearchResultComponent implements OnInit {
     modalRef.componentInstance.owned = owned;
     modalRef.componentInstance.buy = buy;
     modalRef.componentInstance.funds = this.local.getKey('wallet').funds;
+    modalRef.componentInstance.priceChangeSubject = this.priceChangeSubject;
 
     modalRef.dismissed.subscribe((val) => {
       if(val){
@@ -617,13 +723,67 @@ export class SearchResultComponent implements OnInit {
       this.priceRefreshTimer = setInterval(() => {
         this.api.getStockQuote(this.data.profile.ticker).subscribe((quote) => {
           this.data.quote = quote;
+          this.now = Date.now();
+          this.priceChangeSubject.next(this.data.quote.c);
         });
       }, 15000);
+      this.chartRefreshTimer = setInterval(() => {
+        this.api.getStockHistory(this.data.profile.ticker, '5', '6H', this.data.quote.t).subscribe((s_history) => {
+          this.data.short_history = s_history;
+          let summaryChart: any = [];
+          for(let i=0; i<this.data.short_history.t.length; i++){
+            // console.log(this.data.short_history.t[i]);
+            summaryChart.push([this.data.short_history.t[i] * 1000, this.data.short_history.c[i]]);
+          }
+          this.data.charts.summary = {
+            title: {
+              text: ''
+            },
+            subtitle: {
+              text: `${this.data.profile.ticker} Hourly Price Variation`
+            },
+            navigator: {
+              height: 0,
+              handles:{
+                enabled: false
+              },
+              xAxis: {
+                labels: {
+                  enabled: false
+                }
+              }
+            },
+            rangeSelector: {
+              enabled: false,
+            },
+            legend:{
+              enabled: false
+            },
+            yAxis: [{
+              title: {
+                text: ''
+              },
+              opposite: true
+            }],
+            series: [{
+              name: `${this.data.profile.ticker}`,
+              type: 'line',
+              data: summaryChart,
+              color: this.data.quote.dp > 0 ? '#198754' : '#dc3545',
+              threshold: null
+            }],
+            time: {
+              useUTC: false
+            }
+          };
+        });
+      }, 60000);
     }
   }
 
   ngOnDestroy(): void {
     clearInterval(this.priceRefreshTimer);
+    clearInterval(this.chartRefreshTimer);
   }
 
 }

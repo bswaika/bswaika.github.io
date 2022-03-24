@@ -12,7 +12,7 @@
                                 <p class="small mb-0">{{stock.name}}</p>
                             </div>
                             <div *ngIf="stock.c" class="col-6 text-end">
-                                <h2 class="py-0 my-0 lh-sm" [class]="stock.d > 0 ? 'text-success' : 'text-danger'">{{stock.c}}
+                                <h2 class="py-0 my-0 lh-sm" [class]="stock.d > 0 ? 'text-success' : 'text-danger'">{{stock.c.toFixed(2)}}
                                 </h2>
                                 <p class="py-0 my-0 small" [class]="stock.d > 0 ? 'text-success' : 'text-danger'"><small><i class="bi"
                                             [class]="stock.d > 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i></small>

@@ -45,7 +45,7 @@ const quote = async(req, res, next) => {
         }).toString();
         const { data, status } = await axios.get(`${BASE_URL}/quote?${params}`);
         data.marketOpen = true;
-        if(Date.now() - data.t >= 60) data.marketOpen = false;
+        if(Date.now() / 1000 - data.t > 240) data.marketOpen = false;
         return res.status(status).json(data);
     }catch(err){
         next(err);
@@ -63,7 +63,7 @@ const history = async(req, res, next) => {
             resolution,
             from,
             to
-        }).toString();
+        }).toString();        
         const { data, status } = await axios.get(`${BASE_URL}/stock/candle?${params}`);
         return res.status(status).json(data);
     }catch(err){

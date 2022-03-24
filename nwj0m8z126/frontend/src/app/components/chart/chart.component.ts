@@ -1,10 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { StockChart, Chart } from 'angular-highcharts';
 import * as HighCharts from 'highcharts/highstock';
+import * as NormalHighCharts from 'highcharts';
 import IndicatorsCore from 'highcharts/indicators/indicators';
 import IndicatorVBP from 'highcharts/indicators/volume-by-price';
+import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import { tap } from 'rxjs';
 
+NoDataToDisplay(HighCharts);
+NoDataToDisplay(NormalHighCharts);
 IndicatorsCore(HighCharts);
 IndicatorVBP(HighCharts);
 

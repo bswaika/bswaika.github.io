@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, tap } from 'rxjs';
 import { LocalService } from 'src/app/services/store/local.service';
 import { SessionService } from 'src/app/services/store/session.service';
 
@@ -17,6 +18,7 @@ export class TransactModalComponent implements OnInit {
   @Input() price: number = 0;
   @Input() funds: number = 0;
   @Input() buy: boolean = true;
+  @Input() priceChangeSubject: Subject<number> = new Subject<number>();
 
   error: string = '';
   total: number = 0;
@@ -25,8 +27,9 @@ export class TransactModalComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal, private local: LocalService, private session: SessionService) { }
 
   ngOnInit(): void {
+    this.priceChangeSubject.pipe(tap(val => this.price = val)).subscribe();
     this.quantity.valueChanges.subscribe((val) => {
-      if(val < 0 || !Number.isInteger(val)){
+      if(val <= 0 || !Number.isInteger(val)){
         this.error = 'ERROR';
         this.total = 0;
       }else{

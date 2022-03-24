@@ -4,7 +4,7 @@
     </div>
     <div class="pt-2">
         <div class="container mt-2 text-center" *ngIf="notification.other">
-            <ngb-alert #self_closing_other [type]="notification.other.type" (closed)="notification.other=null">{{notification.other.text}}</ngb-alert>
+            <ngb-alert [type]="notification.other.type" (closed)="notification.other=null">{{notification.other.text}}</ngb-alert>
         </div>
         <div class="container mt-2 text-center" *ngIf="notification.wl">
             <ngb-alert #self_closing_wl [type]="notification.wl.type" (closed)="notification.wl=null">{{notification.wl.text}}</ngb-alert>
@@ -27,7 +27,7 @@
                 <img class="d-block mx-auto logo mt-2" [src]="data.profile.logo" alt="">
             </div>
             <div class="col-5 px-1 col-md-4 px-md-auto text-end">
-                <h1 class="py-0 my-0 lh-1" [class]="data.quote.d > 0 ? 'text-success' : 'text-danger'">{{data.quote.c}}
+                <h1 class="py-0 my-0 lh-1" [class]="data.quote.d > 0 ? 'text-success' : 'text-danger'">{{data.quote.c.toFixed(2)}}
                 </h1>
                 <h2 class="subtitle py-0 my-0 lh-sm" [class]="data.quote.d > 0 ? 'text-success' : 'text-danger'"><small><i class="bi"
                             [class]="data.quote.d > 0 ? 'bi-caret-up-fill' : 'bi-caret-down-fill'"></i></small>

@@ -10,7 +10,7 @@
                     <mat-spinner mode="indeterminate" diameter="30"></mat-spinner>
                 </mat-option>
                 <mat-option *ngFor="let suggestion of results" [value]="suggestion.symbol">
-                    {{suggestion.displaySymbol}} <span class="small text-muted">| {{suggestion.description}}</span>
+                    {{suggestion.symbol}} <span class="small text-muted">| {{suggestion.description}}</span>
                 </mat-option>
             </mat-autocomplete>
             <span class="input-group-text bg-transparent border-0 pt-0 pb-0">
