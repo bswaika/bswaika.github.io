@@ -1,3 +1,5 @@
+// require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { logger } = require('./logger');
@@ -5,7 +7,7 @@ const handlers = require('./handlers');
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
-const CORS = { origin: '*' };
+const CORS = { origin: process.env.APP_DOMAIN || 'http://localhost:3001' };
 
 const app = express();
 

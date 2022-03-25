@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Express Server for Hosting Angular App on EBS",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Baladitya Swaika",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
