@@ -35,6 +35,7 @@ export class SearchResultComponent implements OnInit {
   tickerVal: string = '';
   priceChangeSubject: Subject<number> = new Subject<number>();
   loadingSubject: Subject<boolean> = new Subject<boolean>();
+  chartUpdateSubject: Subject<any> = new Subject<any>();
   priceRefreshTimer: any = null;
   chartRefreshTimer: any = null;
   results: Observable<any> = new Observable<any>();
@@ -482,18 +483,20 @@ export class SearchResultComponent implements OnInit {
                   this.api.getStockQuote(profile.ticker).subscribe((quote) => {
                     this.data.quote = quote;
                     this.now = Date.now();
+                    this.session.setKey('quote', this.data.quote);
                     this.priceChangeSubject.next(this.data.quote.c);
                   });
                 }, 15000);
                 this.chartRefreshTimer = setInterval(() => {
-                  this.api.getStockHistory(profile.ticker, '5', '6H', quote.t).subscribe((s_history) => {
+                  this.api.getStockHistory(profile.ticker, '5', '6H', this.data.quote.t).subscribe((s_history) => {
                     this.data.short_history = s_history;
                     let summaryChart: any = [];
                     for(let i=0; i<this.data.short_history.t.length; i++){
                       // console.log(this.data.short_history.t[i]);
                       summaryChart.push([this.data.short_history.t[i] * 1000, this.data.short_history.c[i]]);
                     }
-                    this.data.charts.summary = {
+                    this.chartUpdateSubject.next({data: summaryChart, color: this.data.quote.dp > 0 ? '#198754' : '#dc3545'});
+                    let summary = {
                       title: {
                         text: ''
                       },
@@ -534,8 +537,9 @@ export class SearchResultComponent implements OnInit {
                         useUTC: false
                       }
                     };
+                    this.session.setKey('charts_summary', summary);
                   });
-                }, 60000);
+                }, 15000);
 
               }
 
@@ -725,6 +729,7 @@ export class SearchResultComponent implements OnInit {
           this.data.quote = quote;
           this.now = Date.now();
           this.priceChangeSubject.next(this.data.quote.c);
+          this.session.setKey('quote', this.data.quote);
         });
       }, 15000);
       this.chartRefreshTimer = setInterval(() => {
@@ -735,7 +740,8 @@ export class SearchResultComponent implements OnInit {
             // console.log(this.data.short_history.t[i]);
             summaryChart.push([this.data.short_history.t[i] * 1000, this.data.short_history.c[i]]);
           }
-          this.data.charts.summary = {
+          this.chartUpdateSubject.next({data: summaryChart, color: this.data.quote.dp > 0 ? '#198754' : '#dc3545'});
+          let summary = {
             title: {
               text: ''
             },
@@ -776,8 +782,9 @@ export class SearchResultComponent implements OnInit {
               useUTC: false
             }
           };
+          this.session.setKey('charts_summary', summary);
         });
-      }, 60000);
+      }, 15000);
     }
   }
 
